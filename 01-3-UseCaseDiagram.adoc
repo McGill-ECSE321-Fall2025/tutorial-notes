@@ -1,0 +1,12 @@
+=== Use Case Diagram
+
+We also want to describe the use cases for the event registration application using a use case diagram.
+
+image::UseCaseDiagram.png[]
+
+The diagram above shows the following.
+
+- Any user can search for and view events.
+- To register for an event, a user must have an account.
+- Premium users have all the same privileges as a regular account holder. In addition, they can create events.
+- Only guests can sign up and log in (users who are already logged in don't need these features).
