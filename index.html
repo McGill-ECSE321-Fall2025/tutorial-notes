@@ -453,6 +453,25 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_github_project_repository">2.1. GitHub Project Repository</a></li>
 </ul>
 </li>
+<li><a href="#_backend">3. Backend</a>
+<ul class="sectlevel2">
+<li><a href="#_setting_up_a_local_postgresql_database">3.1. Setting Up a Local PostgreSQL Database</a>
+<ul class="sectlevel3">
+<li><a href="#_installation">3.1.1. Installation</a></li>
+<li><a href="#_creating_a_database">3.1.2. Creating a Database</a></li>
+</ul>
+</li>
+<li><a href="#_setting_up_a_spring_boot_project">3.2. Setting up a Spring Boot Project</a></li>
+<li><a href="#_the_domain_model">3.3. The Domain Model</a>
+<ul class="sectlevel3">
+<li><a href="#_designing_the_model">3.3.1. Designing the Model</a></li>
+<li><a href="#_generating_java_code">3.3.2. Generating Java Code</a></li>
+<li><a href="#_jpa_annotations">3.3.3. JPA Annotations</a></li>
+<li><a href="#_generating_the_database_tables">3.3.4. Generating the Database Tables</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -999,10 +1018,494 @@ The status of issues can only be changed after they are created.
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_backend">3. Backend</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_setting_up_a_local_postgresql_database">3.1. Setting Up a Local PostgreSQL Database</h3>
+<div class="paragraph">
+<p>In this section, we will set up a local PostgreSQL database to store our application&#8217;s data.</p>
+</div>
+<div class="sect3">
+<h4 id="_installation">3.1.1. Installation</h4>
+<div class="paragraph">
+<p>Download the latest version of PostgreSQL from <a href="https://www.enterprisedb.com/downloads/postgres-postgresql-downloads" class="bare">https://www.enterprisedb.com/downloads/postgres-postgresql-downloads</a>. Once the download is complete, run the installer. You can stick with the default values for most screens.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+For your project, each team member will need to set up their own database on their own machine.
+<strong>You should coordinate with your team members and choose the same port number and password.</strong>
+This will make it easier to configure your app to connect to the database.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The default installation directory should be fine.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figs/psql-setup-installation-directory.PNG" alt="PostgreSQL installation: installation directory" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>Leave every component checked.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figs/psql-setup-components.png" alt="PostgreSQL installation: components" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>The default data directory should be fine.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figs/psql-setup-data-directory.png" alt="PostgreSQL installation: data directory" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>Choose a password. <em>IMPORTANT: do not forget this password. You will need it later.</em></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figs/psql-setup-password.png" alt="PostgreSQL installation: password" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>The default port number should be fine.
+However, there&#8217;s no problem using a different port number in case a different app is using 5432 for some reason.
+Just remember your choice so that you know which port your app should connect to.
+Here is a <a href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers">list of typical TCP/UDP ports</a> and their reservation status.
+<strong>Do not use a port that is reserved.</strong></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figs/psql-setup-port.png" alt="PostgreSQL installation: port number" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>The default locale should be fine.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figs/psql-setup-locale.png" alt="PostgreSQL installation: locale" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>The summary might look something like this:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figs/psql-setup-summary.png" alt="PostgreSQL installation: summary" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>There&#8217;s no need for other tools, so you can skip the Stack Builder after the installation by unchecking the checkbox.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figs/psql-setup-skip-stack-builder.png" alt="PostgreSQL installation: skip Stack Builder" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>Once PostgreSQL is installed, you should be able to connect to your local instance by running the command <code>psql --username postgres</code> and entering your password (I hope you haven&#8217;t forgotten it already).
+If you didn&#8217;t use the default port number, you can pass the additional command-line argument <code>--port</code> (e.g., <code>psql --username postgres --port 5433</code>).</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+If you get an error with some variation of the message "command 'psql' not found," then you likely need to add <code>psql</code> to your PATH environment variable.
+It should be straightforward to find online instructions to do so on your operating system.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For the course project, each team member will need to set up a separate database instance on their own computer.
+To simplify configuring your app to connect to the database, each team member should use the same password and port number.
+If you initially chose different passwords, you can change your password by running <code>psql</code>, running the command <code>\password postgres</code>, and then entering the new password when prompted.
+You can similarly change the port number (e.g., by following <a href="https://www.commandprompt.com/education/how-to-change-default-port-in-postgresql/">these instructions</a>).
+In short:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In <code>psql</code>, run the command <code>show config_file;</code> (note the trailing semicolon) to locate the configuration file which stores the port number.</p>
+</li>
+<li>
+<p>Exit <code>psql</code>.</p>
+</li>
+<li>
+<p>Open the configuration file, locate the line <code>port = 5432</code> (where 5432 is replaced by your old port number), change the port number, and save the file.</p>
+</li>
+<li>
+<p>Restart the PostgreSQL service (or just restart your computer).</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_creating_a_database">3.1.2. Creating a Database</h4>
+<div class="paragraph">
+<p>One database management system (in this case, PostgreSQL) can host multiple databases.
+In <code>psql</code>, create a new database for the event registration app using the command</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>CREATE DATABASE event_registration;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Check that the database exists by running the command <code>\l</code>:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figs/psql-create-database.png" alt="PostgreSQL create database">
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_setting_up_a_spring_boot_project">3.2. Setting up a Spring Boot Project</h3>
+<div class="paragraph">
+<p>We will use the Spring Boot framework to implement the backend of the event registration system.
+In this section, we will use Spring Initializr to quickly generate the folder structure and some files for a new Spring Boot project.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to <a href="https://start.spring.io/" class="bare">https://start.spring.io/</a>.</p>
+</li>
+<li>
+<p>Set the project type to Gradle.</p>
+</li>
+<li>
+<p>Leave the Spring Boot version at the default value.</p>
+</li>
+<li>
+<p>Set the names for the group, package, etc.</p>
+</li>
+<li>
+<p>Set the Java version.</p>
+</li>
+<li>
+<p>Add the following dependencies:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>web</p>
+</li>
+<li>
+<p>data-jpa</p>
+</li>
+<li>
+<p>postgresql</p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figs/SpringInitializr.png" alt="Spring Initializr">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Since Java version 25 is released on September 16, 2025, you have the option to choose Java 25 for Spring Initializr. However, as of September 24, 2025 (the date where this tutorial was delivered), this is a false claim on their side since Gradle 8.14.3, which is used by Spring Initializr, does not support Java 25. Therefore, if you choose Java 25, you will run into build errors later on. Simply fallback to Java 24 or an earlier version will fix the issue. Eventually Spring Initializr will likely update to Gradle 9.1.0+, which supports Java 25.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Click "GENERATE" and you should get a zip file.
+Unzip it, move the files into your Git repository, and rename the directory to EventRegistration-Backend.
+Later, we will add a new directory EventRegistration-Frontend for the user interface code.
+Your Git repository should look something like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>.
+├── EventRegistration-Backend
+│   ├── build.gradle
+│   ├── gradle
+│   │   └── wrapper
+│   │       ├── gradle-wrapper.jar
+│   │       └── gradle-wrapper.properties
+│   ├── gradlew
+│   ├── gradlew.bat
+│   ├── HELP.md
+│   ├── settings.gradle
+│   └── src
+│       ├── main
+│       │   ├── java
+│       │   │   └── ca
+│       │   │       └── mcgill
+│       │   │           └── ecse321
+│       │   │               └── eventregistration
+│       │   │                   └── EventregistrationApplication.java
+│       │   └── resources
+│       │       ├── application.properties
+│       │       ├── static
+│       │       └── templates
+│       └── test
+│           └── java
+│               └── ca
+│                   └── mcgill
+│                       └── ecse321
+│                           └── eventregistration
+│                               └── EventregistrationApplicationTests.java
+├── .git
+│   └── [omitted...]
+├── .gitignore
+└── README.md</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Open <code>EventRegistration-Backend/src/main/resources/application.properties</code> and write the following configuration information:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>spring.datasource.driver-class-name = org.postgresql.Driver
+
+# What to do with existing database tables on startup and shutdown.
+# See https://docs.spring.io/spring-boot/how-to/data-initialization.html#howto.data-initialization.using-hibernate.
+# ddl-auto=create-drop means all database tables are created on startup and
+# dropped (deleted) on shutdown.
+# ddl-auto=update does not drop tables on shutdown. It will add new tables and
+# columns on startup, but will not delete existing ones.
+spring.jpa.hibernate.ddl-auto = update
+
+# Adding the following line leads to better error messages in case the URL or
+# credentials are wrong
+spring.jpa.database-platform = org.hibernate.dialect.PostgreSQLDialect
+
+# Be careful with the URL format: it is easy to make a typo here
+spring.datasource.url = jdbc:postgresql://localhost:5432/event_registration
+spring.datasource.username = postgres
+spring.datasource.password = PASSWORD
+
+# Decide which port our backend will listen on.
+# This is relevant for deliverable 2.
+# Could also just set server.port = 8080 to always listen on port 8080.
+# The advantage of using the following form is that you can change the port on
+# startup, e.g., using .\gradlew bootRun --args='--port=9090'.
+server.port = ${port:8080}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>(<code>PASSWORD</code> is the password you chose while setting up the local database.)</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">
+For simplicity, we store our local database password directly in the public configuration file. <strong>Don&#8217;t do this with real credentials. Look for resources on proper secrets management (e.g., <a href="https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions" class="bare">https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions</a>).</strong>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_the_domain_model">3.3. The Domain Model</h3>
+<div class="sect3">
+<h4 id="_designing_the_model">3.3.1. Designing the Model</h4>
+<div class="paragraph">
+<p>Before we can program the event registration app, we need to model it.</p>
+</div>
+<div class="paragraph">
+<p>We clearly need classes representing people and events.
+We can associate those two classes to keep track of who is registered for each event.
+It is also standard practice in domain modeling to include a root class that includes all the other classes.</p>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="figs/DomainModelNaive.png" alt="DomainModelNaive">
+</div>
+</div>
+<div class="paragraph">
+<p>However, this domain model is not suitable for a database.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Since we are only developing one event registration system, the root class is unnecessary. <strong>Solution:</strong> remove the root class.</p>
+</li>
+<li>
+<p>Bidirectional associations mean duplicate data in the database; every time someone registers for an event, we would need to add the event to their list of events <strong>and</strong> add the person to the list of registrants for the event. This is problematic both because (1) it wastes storage space and (2) the data may become inconsistent (what happens if Alice has a certain event in her list of events but Alice is not in the list of registrants for that event?). <strong>Solution:</strong> make all associations unidirectional.</p>
+</li>
+<li>
+<p>Many-to-many associations require an extra table in the database. Explicitly representing this as a class in the domain model will make our lives easier. <strong>Solution:</strong> add a class called "Registration" between User and Event.</p>
+</li>
+<li>
+<p>In the database, each table needs a primary key column. <strong>Solution:</strong> in this example, we could theoretically use the email address as a primary key for users and a combination of attributes (e.g., name, date, start time) as the primary key for events. However, it is usually best to simply add an integer ID to be a primary key. Using a single integer is usually simpler than using a combination of attributes and it saves space compared to using a string like an email address or username. Using a meaningful attribute like an email address, name, date, or start time in a primary key also makes it very difficult to change that attribute after the object is created, whereas an integer ID never needs to be changed.</p>
+</li>
+<li>
+<p>"User" is a reserved keyword in PostgreSQL (<a href="https://www.postgresql.org/docs/current/sql-keywords-appendix.html" class="bare">https://www.postgresql.org/docs/current/sql-keywords-appendix.html</a>). If we call a database table "User," we will run into syntax errors. <strong>Solution:</strong> rename the class (to "Person," "Customer," etc.).</p>
+</li>
+</ol>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="figs/DomainModelFixed.png" alt="DomainModelFixed">
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">
+For simplicity, we store users' passwords in plaintext. <strong>This is highly insecure. Don&#8217;t ever do this with real passwords. See <a href="https://www.youtube.com/watch?v=8ZtInClXe1Q" class="bare">https://www.youtube.com/watch?v=8ZtInClXe1Q</a>.</strong>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Note that we need to ensure people cannot register multiple times for the same event twice. There are at least two ways to do this.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Let the primary key for registrations be a "composite key" consisting of the primary keys for the registrant and event. Then, if Alice signs up for the same event twice, there will already be a row in the registrations table with her ID and the event&#8217;s ID, and therefore PostgreSQL will prevent the creation of a new row.</p>
+</li>
+<li>
+<p>In the backend, before creating a new registration, check if the given user is already registered for the given event.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_generating_java_code">3.3.2. Generating Java Code</h4>
+<div class="paragraph">
+<p>Now that we have a good domain model, we translate it to Java code.
+This can be done by hand or using a tool like <a href="https://cruise.umple.org/umpleonline/">Umple</a>.
+Full documentation on how to use Umple can be found <a href="https://cruise.umple.org/umple/GettingStarted.html">here</a>.</p>
+</div>
+<div class="paragraph">
+<p>Whether you write the model code by hand or using Umple, create a new package called <code>model</code> under <code>src/main/java/ca/mcgill/ecse321/eventregistration</code>.
+Each class must have its own file.
+Make sure your model files declare the package:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">package ca.mcgill.ecse321.eventregistration.model;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Your Git repository should now look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-none" data-lang="none">.
+├── EventRegistration-Backend
+│   ├── build.gradle
+│   ├── gradle
+│   │   └── wrapper
+│   │       ├── gradle-wrapper.jar
+│   │       └── gradle-wrapper.properties
+│   ├── gradlew
+│   ├── gradlew.bat
+│   ├── HELP.md
+│   ├── settings.gradle
+│   └── src
+│       ├── main
+│       │   ├── java
+│       │   │   └── ca
+│       │   │       └── mcgill
+│       │   │           └── ecse321
+│       │   │               └── eventregistration
+│       │   │                   ├── EventregistrationApplication.java
+│       │   │                   └── model
+│       │   │                       ├── Event.java
+│       │   │                       ├── Person.java
+│       │   │                       └── Registration.java
+│       │   └── resources
+│       │       ├── application.properties
+│       │       ├── static
+│       │       └── templates
+│       └── test
+│           └── java
+│               └── ca
+│                   └── mcgill
+│                       └── ecse321
+│                           └── eventregistration
+│                               └── EventregistrationApplicationTests.java
+├── .git
+│   └── [omitted...]
+├── .gitignore
+└── README.md</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_jpa_annotations">3.3.3. JPA Annotations</h4>
+<div class="paragraph">
+<p>This is an exercise in being able to write JPA compliant code simply by looking at the domain model, which is left up to the students.
+The documentation for Hibernate 6.5 (the ORM we will be using) can be found here: <a href="https://docs.jboss.org/hibernate/orm/6.5/userguide/html_single/Hibernate_User_Guide.html" class="bare">https://docs.jboss.org/hibernate/orm/6.5/userguide/html_single/Hibernate_User_Guide.html</a>.
+These are the essential attributes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>@Entity</code>: Placed before the class declaration to mark a class as an "entity," which may have a corresponding table in the database. Hibernate has a few requirements for entity classes (e.g., it must have a public, protected, or package-private no-args constructor). <a href="https://docs.jboss.org/hibernate/orm/6.5/userguide/html_single/Hibernate_User_Guide.html#entity-pojo">Read the docs for more details</a>.</p>
+</li>
+<li>
+<p><code>@Inheritance(strategy=STRATEGY)</code>: Used to specify the inheritance strategy for a class hierarchy, where the superclass is annotated with the <code>@Entity</code> tag. <a href="https://docs.jboss.org/hibernate/orm/6.5/userguide/html_single/Hibernate_User_Guide.html#entity-inheritance">Read the docs for more details</a>.</p>
+</li>
+<li>
+<p><code>@Id</code>: Placed before the attribute declaration that will serve as the primary unique identifier for the class in the corresponding database table. <a href="https://docs.jboss.org/hibernate/orm/6.5/userguide/html_single/Hibernate_User_Guide.html#identifiers-simple">Read the docs for more details</a>.</p>
+</li>
+<li>
+<p><code>@EmbeddedId</code>, <code>@Embedded</code>: Used to define a composite primary key. <a href="https://docs.jboss.org/hibernate/orm/6.5/userguide/html_single/Hibernate_User_Guide.html#identifiers-composite">Read the docs for more details</a>.</p>
+</li>
+<li>
+<p><code>@GeneratedValue(strategy=STRATEGY)</code>: Placed between the <em>@Id</em> tag and the attribute declaration, indicating the attribute is to be generated automatically. <a href="https://docs.jboss.org/hibernate/orm/6.5/userguide/html_single/Hibernate_User_Guide.html#identifiers-generators">Read the docs for more details</a>.</p>
+</li>
+<li>
+<p><code>@OneToOne</code>, <code>@ManyToOne</code>, etc.: Placed before the attribute declaration to specify the multiplicity in associative relationship between the current class and reference class. The first word is the multiplicity of the current class, with the other representing the multiplicity of the other class. <a href="https://docs.jboss.org/hibernate/orm/6.5/userguide/html_single/Hibernate_User_Guide.html#associations">Read the docs for more details</a>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_generating_the_database_tables">3.3.4. Generating the Database Tables</h4>
+<div class="paragraph">
+<p>Once you have added all the required JPA annotations, Hibernate will be able to generate the database tables automatically.
+From the <code>EventRegistration-Backend/</code> directory, run <code>./gradlew test</code>.
+This will run the default test in <code>EventRegistrationApplicationTests.java</code>.
+While the test is starting, Hibernate will create the database.
+After the test passes, connect to the database using <code>psql --username postgres --dbname event_registration</code> and list the tables using <code>\dt</code>.
+There should be one table per model class.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-09-15 19:27:37 -0400
+Last updated 2025-09-23 22:40:32 -0400
 </div>
 </div>
 </body>

@@ -1,0 +1,108 @@
+=== The Domain Model
+
+==== Designing the Model
+
+Before we can program the event registration app, we need to model it.
+
+We clearly need classes representing people and events.
+We can associate those two classes to keep track of who is registered for each event.
+It is also standard practice in domain modeling to include a root class that includes all the other classes.
+
+image::DomainModelNaive.png[align="center"]
+
+However, this domain model is not suitable for a database.
+
+1. Since we are only developing one event registration system, the root class is unnecessary. *Solution:* remove the root class.
+2. Bidirectional associations mean duplicate data in the database; every time someone registers for an event, we would need to add the event to their list of events *and* add the person to the list of registrants for the event. This is problematic both because (1) it wastes storage space and (2) the data may become inconsistent (what happens if Alice has a certain event in her list of events but Alice is not in the list of registrants for that event?). *Solution:* make all associations unidirectional.
+3. Many-to-many associations require an extra table in the database. Explicitly representing this as a class in the domain model will make our lives easier. *Solution:* add a class called "Registration" between User and Event.
+4. In the database, each table needs a primary key column. *Solution:* in this example, we could theoretically use the email address as a primary key for users and a combination of attributes (e.g., name, date, start time) as the primary key for events. However, it is usually best to simply add an integer ID to be a primary key. Using a single integer is usually simpler than using a combination of attributes and it saves space compared to using a string like an email address or username. Using a meaningful attribute like an email address, name, date, or start time in a primary key also makes it very difficult to change that attribute after the object is created, whereas an integer ID never needs to be changed.
+5. "User" is a reserved keyword in PostgreSQL (https://www.postgresql.org/docs/current/sql-keywords-appendix.html). If we call a database table "User," we will run into syntax errors. *Solution:* rename the class (to "Person," "Customer," etc.).
+
+image::DomainModelFixed.png[align="center"]
+
+WARNING: For simplicity, we store users' passwords in plaintext. *This is highly insecure. Don't ever do this with real passwords. See https://www.youtube.com/watch?v=8ZtInClXe1Q.*
+
+Note that we need to ensure people cannot register multiple times for the same event twice. There are at least two ways to do this.
+
+1. Let the primary key for registrations be a "composite key" consisting of the primary keys for the registrant and event. Then, if Alice signs up for the same event twice, there will already be a row in the registrations table with her ID and the event's ID, and therefore PostgreSQL will prevent the creation of a new row.
+2. In the backend, before creating a new registration, check if the given user is already registered for the given event.
+
+==== Generating Java Code
+
+Now that we have a good domain model, we translate it to Java code.
+This can be done by hand or using a tool like link:https://cruise.umple.org/umpleonline/[Umple].
+Full documentation on how to use Umple can be found link:https://cruise.umple.org/umple/GettingStarted.html[here].
+
+Whether you write the model code by hand or using Umple, create a new package called `model` under `src/main/java/ca/mcgill/ecse321/eventregistration`.
+Each class must have its own file.
+Make sure your model files declare the package:
+
+[source,java]
+----
+package ca.mcgill.ecse321.eventregistration.model;
+----
+
+Your Git repository should now look like this:
+
+[source,none]
+----
+.
+├── EventRegistration-Backend
+│   ├── build.gradle
+│   ├── gradle
+│   │   └── wrapper
+│   │       ├── gradle-wrapper.jar
+│   │       └── gradle-wrapper.properties
+│   ├── gradlew
+│   ├── gradlew.bat
+│   ├── HELP.md
+│   ├── settings.gradle
+│   └── src
+│       ├── main
+│       │   ├── java
+│       │   │   └── ca
+│       │   │       └── mcgill
+│       │   │           └── ecse321
+│       │   │               └── eventregistration
+│       │   │                   ├── EventregistrationApplication.java
+│       │   │                   └── model
+│       │   │                       ├── Event.java
+│       │   │                       ├── Person.java
+│       │   │                       └── Registration.java
+│       │   └── resources
+│       │       ├── application.properties
+│       │       ├── static
+│       │       └── templates
+│       └── test
+│           └── java
+│               └── ca
+│                   └── mcgill
+│                       └── ecse321
+│                           └── eventregistration
+│                               └── EventregistrationApplicationTests.java
+├── .git
+│   └── [omitted...]
+├── .gitignore
+└── README.md
+----
+
+
+==== JPA Annotations
+This is an exercise in being able to write JPA compliant code simply by looking at the domain model, which is left up to the students.
+The documentation for Hibernate 6.5 (the ORM we will be using) can be found here: https://docs.jboss.org/hibernate/orm/6.5/userguide/html_single/Hibernate_User_Guide.html.
+These are the essential attributes:
+
+* `@Entity`: Placed before the class declaration to mark a class as an "entity," which may have a corresponding table in the database. Hibernate has a few requirements for entity classes (e.g., it must have a public, protected, or package-private no-args constructor). link:https://docs.jboss.org/hibernate/orm/6.5/userguide/html_single/Hibernate_User_Guide.html#entity-pojo[Read the docs for more details].
+* `@Inheritance(strategy=STRATEGY)`: Used to specify the inheritance strategy for a class hierarchy, where the superclass is annotated with the `@Entity` tag. link:https://docs.jboss.org/hibernate/orm/6.5/userguide/html_single/Hibernate_User_Guide.html#entity-inheritance[Read the docs for more details].
+* `@Id`: Placed before the attribute declaration that will serve as the primary unique identifier for the class in the corresponding database table. link:https://docs.jboss.org/hibernate/orm/6.5/userguide/html_single/Hibernate_User_Guide.html#identifiers-simple[Read the docs for more details].
+* `@EmbeddedId`, `@Embedded`: Used to define a composite primary key. link:https://docs.jboss.org/hibernate/orm/6.5/userguide/html_single/Hibernate_User_Guide.html#identifiers-composite[Read the docs for more details].
+* `@GeneratedValue(strategy=STRATEGY)`: Placed between the _@Id_ tag and the attribute declaration, indicating the attribute is to be generated automatically. link:https://docs.jboss.org/hibernate/orm/6.5/userguide/html_single/Hibernate_User_Guide.html#identifiers-generators[Read the docs for more details].
+* `@OneToOne`, `@ManyToOne`, etc.: Placed before the attribute declaration to specify the multiplicity in associative relationship between the current class and reference class. The first word is the multiplicity of the current class, with the other representing the multiplicity of the other class. link:https://docs.jboss.org/hibernate/orm/6.5/userguide/html_single/Hibernate_User_Guide.html#associations[Read the docs for more details].
+
+==== Generating the Database Tables
+Once you have added all the required JPA annotations, Hibernate will be able to generate the database tables automatically.
+From the `EventRegistration-Backend/` directory, run `./gradlew test`.
+This will run the default test in `EventRegistrationApplicationTests.java`.
+While the test is starting, Hibernate will create the database.
+After the test passes, connect to the database using `psql --username postgres --dbname event_registration` and list the tables using `\dt`.
+There should be one table per model class.
