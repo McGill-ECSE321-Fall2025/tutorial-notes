@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.22">
+<meta name="generator" content="Asciidoctor 2.0.23">
 <title>ECSE 321 Introduction to Software Engineering: Tutorial</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -433,6 +433,118 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<style>
+/*! Asciidoctor Tabs | Copyright (c) 2018-present Dan Allen | MIT License */
+.tabs {
+    margin-bottom: 1.25em;
+}
+
+.tablist > ul {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tablist > ul li {
+    align-items: center;
+    background-color: #fff;
+    cursor: pointer;
+    display: flex;
+    font-weight: bold;
+    line-height: 1.5;
+    padding: 0.25em 1em;
+    position: relative;
+}
+
+.tablist > ul li:focus-visible {
+    outline: none;
+}
+
+.tablist.ulist,
+.tablist.ulist > ul li {
+    margin: 0;
+}
+
+.tablist.ulist > ul li + li {
+    margin-left: 0.25em;
+}
+
+.tabs .tablist li::after {
+    content: "";
+    display: block;
+    height: 1px;
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+}
+
+.tabs.is-loading .tablist li:not(:first-child),
+.tabs:not(.is-loading) .tablist li:not(.is-selected) {
+    background-color: #f5f5f5;
+}
+
+.tabs.is-loading .tablist li:first-child::after,
+.tabs:not(.is-loading) .tablist li.is-selected::after {
+    background-color: #fff;
+}
+
+/*
+.tabs:not(.is-loading) .tablist li,
+.tabs:not(.is-loading) .tablist li::after {
+  transition: background-color 200ms ease-in-out;
+}
+*/
+
+.tablist > ul p {
+    line-height: inherit;
+    margin: 0;
+}
+
+.tabpanel {
+    background-color: #fff;
+    padding: 1.25em;
+}
+
+.tablist > ul li,
+.tabpanel {
+    border: 1px solid #dcdcdc;
+}
+
+.tablist > ul li {
+    border-bottom: 0;
+}
+
+.tabs.is-loading .tabpanel + .tabpanel,
+.tabs:not(.is-loading) .tabpanel.is-hidden {
+    display: none;
+}
+
+.tabpanel > :first-child {
+    margin-top: 0;
+}
+
+/* #content is a signature of the Asciidoctor standalone HTML output */
+#content .tabpanel > :last-child,
+#content .tabpanel > :last-child > :last-child,
+#content .tabpanel > :last-child > :last-child > li:last-child > :last-child {
+    margin-bottom: 0;
+}
+
+.tablecontainer {
+    overflow-x: auto;
+}
+
+#content .tablecontainer {
+    margin-bottom: 1.25em;
+}
+
+#content .tablecontainer > table.tableblock {
+    margin-bottom: 0;
+}
+</style>
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
@@ -468,6 +580,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_generating_java_code">3.3.2. Generating Java Code</a></li>
 <li><a href="#_jpa_annotations">3.3.3. JPA Annotations</a></li>
 <li><a href="#_generating_the_database_tables">3.3.4. Generating the Database Tables</a></li>
+</ul>
+</li>
+<li><a href="#_crud_repositories">3.4. CRUD Repositories</a>
+<ul class="sectlevel3">
+<li><a href="#_creating_a_crud_repository">3.4.1. Creating a CRUD Repository</a></li>
+</ul>
+</li>
+<li><a href="#_testing_the_persistence_layer">3.5. Testing the Persistence Layer</a>
+<ul class="sectlevel3">
+<li><a href="#_writing_a_test">3.5.1. Writing a Test</a></li>
+<li><a href="#_running_the_tests">3.5.2. Running the Tests</a></li>
+<li><a href="#_debugging_failing_tests">3.5.3. Debugging Failing Tests</a></li>
 </ul>
 </li>
 </ul>
@@ -1162,7 +1286,7 @@ In <code>psql</code>, create a new database for the event registration app using
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>CREATE DATABASE event_registration;</code></pre>
+<pre class="CodeRay highlight"><code>CREATE DATABASE event_registration;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1241,7 +1365,7 @@ Your Git repository should look something like this:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>.
+<pre class="CodeRay highlight"><code>.
 ├── EventRegistration-Backend
 │   ├── build.gradle
 │   ├── gradle
@@ -1282,7 +1406,7 @@ Your Git repository should look something like this:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>spring.datasource.driver-class-name = org.postgresql.Driver
+<pre class="CodeRay highlight"><code>spring.datasource.driver-class-name = org.postgresql.Driver
 
 # What to do with existing database tables on startup and shutdown.
 # See https://docs.spring.io/spring-boot/how-to/data-initialization.html#howto.data-initialization.using-hibernate.
@@ -1409,7 +1533,7 @@ Make sure your model files declare the package:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">package ca.mcgill.ecse321.eventregistration.model;</code></pre>
+<pre class="CodeRay highlight"><code data-lang="java"><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">ca.mcgill.ecse321.eventregistration.model</span>;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1417,7 +1541,7 @@ Make sure your model files declare the package:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-none" data-lang="none">.
+<pre class="CodeRay highlight"><code data-lang="none">.
 ├── EventRegistration-Backend
 │   ├── build.gradle
 │   ├── gradle
@@ -1500,13 +1624,311 @@ There should be one table per model class.</p>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_crud_repositories">3.4. CRUD Repositories</h3>
+<div class="paragraph">
+<p>In this section, we will introduce the Spring framework&#8217;s inbuilt support for such CRUD operations via the <code>org.springframework.data.repository.CrudRepository</code> interface and will show how to use such repositories to implement your use cases in so-called <em>service</em> classes.</p>
+</div>
+<div class="paragraph">
+<p>If you would like to, you can obtain a version of the project that already has the code for the backend and model classes from the previous tutorials: <a href="https://github.com/McGill-ECSE321-Fall2025/event-registration/tree/6c1472fa2024a6fd0a5af38bde27e6ff3ff44a64/src/main/java/ca/mcgill/ecse321/eventregistration" class="bare">https://github.com/McGill-ECSE321-Fall2025/event-registration/tree/6c1472fa2024a6fd0a5af38bde27e6ff3ff44a64/src/main/java/ca/mcgill/ecse321/eventregistration</a>.</p>
+</div>
+<div class="sect3">
+<h4 id="_creating_a_crud_repository">3.4.1. Creating a CRUD Repository</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Create a new interface <code>PersonRepository</code> in the <code>ca.mcgill.ecse321.eventregistration.repository</code> package and extend the <code>CrudRepository&lt;Person, String&gt;</code> interface.</p>
+</li>
+<li>
+<p>Create a new method <code>Person findById(int id)</code>.<br>
+<em>PersonRepository.java</em></p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">ca.mcgill.ecse321.eventregistration.repository</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.data.repository.CrudRepository</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.model.Person</span>;
+
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">interface</span> <span style="color:#B06;font-weight:bold">PersonRepository</span> <span style="color:#088;font-weight:bold">extends</span> CrudRepository&lt;Person, <span style="color:#0a8;font-weight:bold">Integer</span>&gt;{
+
+        Person findPersonById(<span style="color:#339;font-weight:bold">int</span> id);
+
+}</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Since Spring supports automated JPA Query creation from method names (see <a href="https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.query-creation">possible language constructs here</a>) <strong>we don&#8217;t need to implement the interface manually</strong>, Spring JPA will create the corresponding queries runtime! This way we don&#8217;t need to write SQL queries either.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Create interfaces for the <code>Event</code> and <code>Registration</code> classes as well.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_testing_the_persistence_layer">3.5. Testing the Persistence Layer</h3>
+<div class="paragraph">
+<p>Now we will write some tests to verify that our persistence layer is working as expected.</p>
+</div>
+<div class="sect3">
+<h4 id="_writing_a_test">3.5.1. Writing a Test</h4>
+<div class="paragraph">
+<p>The basic structure of a repository layer test is:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Create a new object.</p>
+</li>
+<li>
+<p>Save the object to the database using the repository.</p>
+</li>
+<li>
+<p>Read the object from the database using the repository.</p>
+</li>
+<li>
+<p>Assert that the object from the database has the correct attributes.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Use dependency injection (via the <code>@Autowired</code> annotation) to get an instance of your repository. Also add the <code>@Test</code> annotation to each test method.</p>
+</div>
+<div class="paragraph">
+<p>You will want to clear the database after each run so that you don&#8217;t waste storage space and avoid violating any unique constraints. Define a method <code>clearDatabase()</code> with the annotation <code>@AfterEach</code> that clears all relevant tables. <strong>Make sure you clear your dependent classes prior to clearing your independent classes, as operations <em>only</em> cascade if the associative relationship is a composition!</strong></p>
+</div>
+<div class="paragraph">
+<p>For example, the test class for the <code>PersonRepository</code> should be similar to the following code. The package and import statements have been omited for clarity.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span style="color:#007">@SpringBootTest</span>
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">PersonRepositoryTests</span> {
+        <span style="color:#007">@Autowired</span>
+        <span style="color:#088;font-weight:bold">private</span> PersonRepository personRepository;
+
+        <span style="color:#007">@AfterEach</span>
+        <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> clearDatabase() {
+                personRepository.deleteAll();
+        }
+
+        <span style="color:#007">@Test</span>
+        <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> testPersistAndLoadPerson() {
+                <span style="color:#777">// Create person</span>
+                <span style="color:#0a8;font-weight:bold">String</span> name = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Muffin Man</span><span style="color:#710">&quot;</span></span>;
+                <span style="color:#0a8;font-weight:bold">String</span> emailAddress = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">muffin.man@gmail.com</span><span style="color:#710">&quot;</span></span>;
+                <span style="color:#0a8;font-weight:bold">String</span> password = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">i_love_muffins</span><span style="color:#710">&quot;</span></span>;
+                Person muffinMan = <span style="color:#080;font-weight:bold">new</span> Person();
+                muffinMan.setName(name);
+                muffinMan.setEmailAddress(emailAddress);
+                muffinMan.setPassword(password);
+
+                <span style="color:#777">// Save person</span>
+                muffinMan = personRepository.save(person);
+                <span style="color:#339;font-weight:bold">int</span> id = muffinMan.getId();
+
+                <span style="color:#777">// Read person from database</span>
+                Person muffinManFromDb = personRepository.findPersonById(id);
+
+                <span style="color:#777">// Assert correct response</span>
+                assertNotNull(person);
+                assertEquals(muffinManFromDb.getName(), name);
+                assertEquals(muffinManFromDb.getEmailAddress(), emailAddress);
+                assertEquals(muffinManFromDb.getPassword(), password);
+        }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_running_the_tests">3.5.2. Running the Tests</h4>
+<div class="paragraph">
+<p>To run the tests, <code>cd</code> into the <code>EventRegistration</code> folder and issue the command <code>./gradlew test</code>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_debugging_failing_tests">3.5.3. Debugging Failing Tests</h4>
+<div class="paragraph">
+<p>You will almost certainly encounter failing tests at some point. When this happens, it is usually helpful to read the stack trace and see if there are any helpful hints. At first you will probably find that the stack traces are short and not very informative. Add the following snippet inside the <code>test</code> task in your <code>build.gradle</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>testLogging {
+        exceptionFormat &quot;full&quot;
+        //...other configurations
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Re-run the tests and you should see much longer stack traces with helpful hints.
+Alternatively, you can check the test report for the full stack traces.
+There should be a link to the report in the output of <code>gradlew</code>.
+In either case, focus on the "Caused by:" parts.
+The error messages go from high-level to low-level, so if you find the messages at the beginning too vague then you might be better off reading the stack trace bottom-up.</p>
+</div>
+<div class="paragraph">
+<p>If <em>all</em> the tests are failing (including <code>contextLoads()</code>), it means your project failed to start. This is generally because it failed to connect to the database or there is an issue with your model.</p>
+</div>
+<div class="sect4">
+<h5 id="_common_errors">Common Errors</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>Missing or badly-formatted data in <code>application.properties</code>. You need a database driver, the URL of an existing database, a username, and a password. The database URL is particularly easy to mess up: it needs to follow the format <code>jdbc:postgresql://localhost:port/database_name</code>.</p>
+</li>
+<li>
+<p>Using reserved keywords for class names (e.g., <code>User</code>). This will result in a nasty SQL syntax error.</p>
+</li>
+<li>
+<p>Incorrectly named repository methods. For example, if you have a property <code>eventName</code> and you call your repository method <code>findEventByName()</code>, Spring will complain that there&#8217;s no property called <code>name</code> in the <code>Event</code> class. Call the method <code>findEventByEventName()</code> instead!</p>
+</li>
+<li>
+<p>Missing annotations. For example, if you forget an <code>@Id</code> annotation, Spring will complain that there&#8217;s no unique identifier for your class.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-09-23 22:40:32 -0400
+Last updated 2025-09-24 23:53:31 -0400
 </div>
 </div>
+<script>
+;(function () { /*! Asciidoctor Tabs | Copyright (c) 2018-present Dan Allen | MIT License */
+  'use strict'
+
+  var config = (document.currentScript || {}).dataset || {}
+  var forEach = Array.prototype.forEach
+
+  init(document.querySelectorAll('.tabs'))
+
+  function init (tabsBlocks) {
+    if (!tabsBlocks.length) return
+    forEach.call(tabsBlocks, function (tabs) {
+      var syncIds = tabs.classList.contains('is-sync') ? {} : undefined
+      var tablist = tabs.querySelector('.tablist ul')
+      tablist.setAttribute('role', 'tablist')
+      var start
+      forEach.call(tablist.querySelectorAll('li'), function (tab, idx) {
+        tab.tabIndex = -1
+        tab.setAttribute('role', tab.classList.add('tab') || 'tab')
+        var id, anchor, syncId
+        if (!(id = tab.id) && (anchor = tab.querySelector('a[id]'))) {
+          id = tab.id = anchor.parentNode.removeChild(anchor).id
+        }
+        var panel = id && tabs.querySelector('.tabpanel[aria-labelledby~="' + id + '"]')
+        if (!panel) return idx ? undefined : toggleSelected(tab, true) // invalid state
+        syncIds && (((syncId = tab.textContent.trim()) in syncIds) ? (syncId = undefined) : true) &&
+        (syncIds[(tab.dataset.syncId = syncId)] = tab)
+        idx || (syncIds && (start = { tab: tab, panel: panel })) ? toggleHidden(panel, true) : toggleSelected(tab, true)
+        tab.setAttribute('aria-controls', panel.id)
+        panel.setAttribute('role', 'tabpanel')
+        var onClick = syncId === undefined ? activateTab : activateTabSync
+        tab.addEventListener('click', onClick.bind({ tabs: tabs, tab: tab, panel: panel }))
+      })
+      if (!tabs.closest('.tabpanel')) {
+        forEach.call(tabs.querySelectorAll('.tabpanel table.tableblock'), function (table) {
+          var container = Object.assign(document.createElement('div'), { className: 'tablecontainer' })
+          table.parentNode.insertBefore(container, table).appendChild(table)
+        })
+      }
+      if (start) {
+        var syncGroupId
+        for (var i = 0, lst = tabs.classList, len = lst.length, className; i !== len; i++) {
+          if (!(className = lst.item(i)).startsWith('data-sync-group-id=')) continue
+          tabs.dataset.syncGroupId = syncGroupId = lst.remove(className) || className.slice(19).replace(/\u00a0/g, ' ')
+          break
+        }
+        if (syncGroupId === undefined) tabs.dataset.syncGroupId = syncGroupId = Object.keys(syncIds).sort().join('|')
+        var preferredSyncId = 'syncStorageKey' in config &&
+          window[(config.syncStorageScope || 'local') + 'Storage'].getItem(config.syncStorageKey + '-' + syncGroupId)
+        var tab = preferredSyncId && syncIds[preferredSyncId]
+        tab && Object.assign(start, { tab: tab, panel: document.getElementById(tab.getAttribute('aria-controls')) })
+        toggleSelected(start.tab, true) || toggleHidden(start.panel, false)
+      }
+    })
+    onHashChange()
+    toggleClassOnEach(tabsBlocks, 'is-loading', 'remove')
+    window.setTimeout(toggleClassOnEach.bind(null, tabsBlocks, 'is-loaded', 'add'), 0)
+    window.addEventListener('hashchange', onHashChange)
+  }
+
+  function activateTab (e) {
+    var tab = this.tab
+    var tabs = this.tabs || (this.tabs = tab.closest('.tabs'))
+    var panel = this.panel || (this.panel = document.getElementById(tab.getAttribute('aria-controls')))
+    querySelectorWithSiblings(tabs, '.tablist .tab', 'tab').forEach(function (el) {
+      toggleSelected(el, el === tab)
+    })
+    querySelectorWithSiblings(tabs, '.tabpanel', 'tabpanel').forEach(function (el) {
+      toggleHidden(el, el !== panel)
+    })
+    if (!this.isSync && 'syncStorageKey' in config && 'syncGroupId' in tabs.dataset) {
+      var storageKey = config.syncStorageKey + '-' + tabs.dataset.syncGroupId
+      window[(config.syncStorageScope || 'local') + 'Storage'].setItem(storageKey, tab.dataset.syncId)
+    }
+    if (!e) return
+    var loc = window.location
+    var hashIdx = loc.hash ? loc.href.indexOf('#') : -1
+    if (~hashIdx) window.history.replaceState(null, '', loc.href.slice(0, hashIdx))
+    e.preventDefault()
+  }
+
+  function activateTabSync (e) {
+    activateTab.call(this, e)
+    var thisTabs = this.tabs
+    var thisTab = this.tab
+    var initialY = thisTabs.getBoundingClientRect().y
+    forEach.call(document.querySelectorAll('.tabs'), function (tabs) {
+      if (tabs === thisTabs || tabs.dataset.syncGroupId !== thisTabs.dataset.syncGroupId) return
+      querySelectorWithSiblings(tabs, '.tablist .tab', 'tab').forEach(function (tab) {
+        if (tab.dataset.syncId === thisTab.dataset.syncId) activateTab.call({ tabs: tabs, tab: tab, isSync: true })
+      })
+    })
+    var shiftedBy = thisTabs.getBoundingClientRect().y - initialY
+    if (shiftedBy && (shiftedBy = Math.round(shiftedBy))) window.scrollBy({ top: shiftedBy, behavior: 'instant' })
+  }
+
+  function querySelectorWithSiblings (scope, selector, siblingClass) {
+    var el = scope.querySelector(selector)
+    if (!el) return []
+    var result = [el]
+    while ((el = el.nextElementSibling) && el.classList.contains(siblingClass)) result.push(el)
+    return result
+  }
+
+  function toggleClassOnEach (elements, className, method) {
+    forEach.call(elements, function (el) {
+      el.classList[method](className)
+    })
+  }
+
+  function toggleHidden (el, state) {
+    el.classList[(el.hidden = state) ? 'add' : 'remove']('is-hidden')
+  }
+
+  function toggleSelected (el, state) {
+    el.setAttribute('aria-selected', '' + state)
+    el.classList[state ? 'add' : 'remove']('is-selected')
+    el.tabIndex = state ? 0 : -1
+  }
+
+  function onHashChange () {
+    var id = window.location.hash.slice(1)
+    if (!id) return
+    var tab = document.getElementById(~id.indexOf('%') ? decodeURIComponent(id) : id)
+    if (!(tab && tab.classList.contains('tab'))) return
+    'syncId' in tab.dataset ? activateTabSync.call({ tab: tab }) : activateTab.call({ tab: tab })
+  }
+})()
+</script>
 </body>
 </html>

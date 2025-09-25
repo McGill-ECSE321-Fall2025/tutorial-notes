@@ -5,3 +5,7 @@ include::03-1-PostgreSQL-Setup.adoc[]
 include::03-2-Spring-Setup.adoc[]
 
 include::03-3-DomainModelling.adoc[]
+
+include::03-4-Spring-CRUD.adoc[]
+
+include::03-5-Persistence-Testing.adoc[]
