@@ -1,0 +1,228 @@
+=== Testing Service Methods in Backend
+
+==== Implementing Unit Tests for Service Class
+
+We can unit test our service classes by replacing our real CRUD repository implementations with "mocks," which have the same interface as the real repositories but do not connect to the database.
+We use the Mockito library to define these mocks.
+
+Consider the following unit tests for the `PersonService`.
+[source,java]
+----
+package ca.mcgill.ecse321.eventregistration.service;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.sql.Date;
+import java.time.LocalDate;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import ca.mcgill.ecse321.eventregistration.exception.EventRegistrationException;
+import ca.mcgill.ecse321.eventregistration.model.Person;
+import ca.mcgill.ecse321.eventregistration.repository.PersonRepository;
+
+@SpringBootTest
+public class PersonServiceTests {
+    @Mock
+    private PersonRepository repo;
+    @InjectMocks
+    private PersonService service;
+
+    @SuppressWarnings("null")
+    @Test
+    public void testCreateValidPerson() {
+        // Arrange
+        String name = "Bob";
+        String email = "bob@mail.mcgill.ca";
+        String password = "12345678";
+        Person bob = new Person(name, email, password, Date.valueOf(LocalDate.now()));
+        when(repo.save(any(Person.class))).thenReturn(bob);
+        // You could also do it with thenAnswer(), which is more flexible but more
+        // verbose
+        // when(repo.save(notNull(Person.class))).thenAnswer((InvocationOnMock iom) ->
+        // iom.getArgument(0));
+
+        // Act
+        Person createdPerson = service.createPerson(name, email, password);
+
+        // Assert
+        assertNotNull(createdPerson);
+        assertEquals(name, createdPerson.getName());
+        assertEquals(email, createdPerson.getEmail());
+        assertEquals(password, createdPerson.getPassword());
+        assertEquals(Date.valueOf(LocalDate.now()), createdPerson.getCreationDate());
+        verify(repo, times(1)).save(bob);
+    }
+
+    @Test
+    public void testReadPersonByValidId() {
+        // Arrange
+        int id = 42;
+        Person charlie = new Person("Charlie", "charlie@mail.mcgill.ca", "password123", Date.valueOf("2024-03-01"));
+        when(repo.findPersonById(id)).thenReturn(charlie);
+
+        // Act
+        Person person = service.findPersonById(id);
+
+        // Assert
+        assertNotNull(person);
+        assertEquals(charlie.getName(), person.getName());
+        assertEquals(charlie.getEmail(), person.getEmail());
+        assertEquals(charlie.getPassword(), person.getPassword());
+        assertEquals(charlie.getCreationDate(), person.getCreationDate());
+    }
+
+    @Test
+    public void testReadPersonByInvalidId() {
+        // Set up
+        int id = 42;
+        // Default is to return null, so you could omit this
+        when(repo.findPersonById(id)).thenReturn(null);
+
+        // Act
+        // Assert
+        EventRegistrationException e = assertThrows(EventRegistrationException.class, () -> service.findPersonById(id));
+        assertEquals("There is no person with ID " + id + ".", e.getMessage());
+        // assertThrows is basically like the following:
+        // try {
+        // service.findPersonById(id);
+        // fail("No exception was thrown.");
+        // } catch (IllegalArgumentException e) {
+        // assertEquals("There is no person with ID " + id + ".", e.getMessage());
+        // }
+    }
+}
+----
+
+As usual, we annotate the test class with `@SpringBootTest` and each test method with `@Test`.
+Instead of using `@Autowired` to get a real `PersonRepository`, we use `@Mock` to get a mock instance.
+And instead of using `@Autowired` to get a `PersonService`, we use `@InjectMocks`, which constructs a `PersonService` using the mock `PersonRepository`.
+
+Within each test method, we follow the usual arrange-act-assert template.
+In `testCreateValidPerson`, the statement `when(repo.save(any(Person.class))).thenReturn(bob);` instructs the mock repository to return the object `bob` whenever we call the `save` method.
+Likewise, in `testReadPersonByValidId`, `when(repo.findPersonById(id)).thenReturn(charlie);` instructs the mock repository to return `charlie` whenever we call `findPersonById` with the specific value in `id`.
+By default, the repository will return `null`, but whenever we expect a different response we must tell the mock what to return.
+These "canned responses" should be similar to the real thing.
+For example, if the real CRUD repositories return `null` when they can't find the person, the mock should also return `null` when we want to simulate not finding a person.
+
+For methods that write to the database (e.g., `createPerson`), it is also good to check that the right thing was written.
+In `testCreateValidPerson`, we do this using `verify(repo, times(1)).save(bob);`, which checks that the `save()` method was called exactly once with an argument that's equal to `bob`.
+
+==== Service Integration Testing with Spring's `TestRestTemplate`
+
+We already know how to manually test our REST API using `curl`.
+However, for automated tests, it is convenient to test the application using Spring Boot's testing features (such as `TestRestTemplate`).
+This has a few benefits.
+For example, you can use built-in assertion methods to more precisely specify your test success conditions and you don't need any extra steps to integrate these tests into your build system: running `./gradlew test` will automatically run the integration tests.
+It's also nice to be able to see the code coverage for your integration tests, even if it's not required for your project.
+
+. Create a new integration testing class and annotate it with `@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)`. This tells Spring to launch the app with a random port (to avoid conflicts if you are already running the app separately).
+. Autowire a `TestRestTemplate`. This will act as your API client (like the Advanced REST Client, Postman, or `curl`).
+. Autowire any repositories you need to clear the database before your tests.
+. You can send POST requests to your API using `TestRestTemplate.postForEntity()`, send GET requests using `TestRestTemplate.getForEntity()`, and so on. You'll need to specify:
+    - A URL (which does not need to include the base URL, since the autowired `TestRestTemplate` already knows where your app is running)
+    - The type of object you expect to receive in response (which should be a DTO).
+    - For requests that include a body (e.g., POST), the body
+
+A simple suite of integration tests for the `Person`-related endpoints might look like this:
+
+[source,java]
+----
+package ca.mcgill.ecse321.eventregistration.integration;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.LocalDate;
+
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import ca.mcgill.ecse321.eventregistration.dto.ErrorDto;
+import ca.mcgill.ecse321.eventregistration.dto.PersonRequestDto;
+import ca.mcgill.ecse321.eventregistration.dto.PersonResponseDto;
+
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(Lifecycle.PER_CLASS)
+public class PersonIntegrationTests {
+    @Autowired
+    private TestRestTemplate client;
+
+    private final String VALID_NAME = "Alice";
+    private final String VALID_EMAIL = "alice@mail.mcgill.ca";
+    private final String VALID_PASSWORD = "password123";
+    private final String INVALID_PASSWORD = "123";
+    private final int INVALID_ID = 0;
+    private int validId;
+
+    @Test
+    @Order(1)
+    public void testCreateValidPerson() {
+        // Arrange
+        PersonRequestDto request = new PersonRequestDto(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
+
+        // Act
+        ResponseEntity<PersonResponseDto> response = client.postForEntity("/people", request, PersonResponseDto.class);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        PersonResponseDto createdPerson = response.getBody();
+        assertNotNull(createdPerson);
+        assertEquals(VALID_NAME, createdPerson.getName());
+        assertEquals(VALID_EMAIL, createdPerson.getEmail());
+        assertNotNull(createdPerson.getId());
+        assertTrue(createdPerson.getId() > 0, "Response should have a positive ID.");
+        assertEquals(LocalDate.now(), createdPerson.getCreationDate());
+
+        this.validId = createdPerson.getId();
+    }
+
+    @Test
+    @Order(2)
+    public void testReadPersonByValidId() {
+        // Arrange
+        String url = "/people/" + this.validId;
+
+        // Act
+        ResponseEntity<PersonResponseDto> response = client.getForEntity(url, PersonResponseDto.class);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        PersonResponseDto person = response.getBody();
+        assertNotNull(person);
+        assertEquals(VALID_NAME, person.getName());
+        assertEquals(VALID_EMAIL, person.getEmail());
+        assertEquals(this.validId, person.getId());
+        assertEquals(LocalDate.now(), person.getCreationDate());
+    }
+}
+----
+
+Notice that this test code uses the annotations `@TestMethodOrder(MethodOrderer.OrderAnnotation.class)` and `@Order` to ensure the tests run in a predictable order.
+We also add the annotation `@TestInstance(Lifecycle.PER_CLASS)` so that JUnit uses the same instance of `PersonIntegrationTests` for each test method.
+By default, JUnit would create a new instance per method and tests that rely on a field having been set by a previous test (in this example, `testReadPersonByInvalidId`) would fail.
+Requiring tests to run in a specific order is *not* good practice for unit tests, but some people consider it acceptable for integration testing.
+If the order-dependence makes you uncomfortable, you can merge tests that depend on one another into one test.

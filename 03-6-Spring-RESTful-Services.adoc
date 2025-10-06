@@ -1,0 +1,286 @@
+=== Creating RESTful Web Services in Spring
+
+The following steps provide guidance on (1) implementing business logic that implements the required functionality (classes annotated with `@Service`) and (2) exposing them using a REST API in the context of the Event Registration Application (classes annotated with `@RestController`).
+
+==== Implementing Service Methods
+
+We implement use-cases in _service classes_ by using the CRUD repositories for each data type of the domain model.
+In _src/main/java_, create a new package `ca.mcgill.ecse321.eventregistration.service`.
+As an example, some simple person-related methods can be implemented as follows:
+
+[source,java]
+----
+package ca.mcgill.ecse321.eventregistration.service;
+
+import java.sql.Date;
+import java.time.LocalDate;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import ca.mcgill.ecse321.eventregistration.model.Person;
+import ca.mcgill.ecse321.eventregistration.repository.PersonRepository;
+import jakarta.transaction.Transactional;
+
+@Service
+public class PersonService {
+    @Autowired
+    private PersonRepository personRepo;
+
+    public Person findPersonById(int pid) {
+        Person p = personRepo.findPersonById(pid);
+        if (p == null) {
+            throw new IllegalArgumentException("There is no person with ID " + pid + ".");
+        }
+        return p;
+    }
+
+    @Transactional
+    public Person createPerson(String name, String email, String password) {
+        if (password == null || password.length() < 8) {
+            throw new IllegalArgumentException("Password too short.");
+        }
+
+        Date now = Date.valueOf(LocalDate.now());
+        Person personToCreate = new Person(name, email, password, now);
+        return personRepo.save(personToCreate);
+    }
+}
+----
+
+The `@Transactional` annotations means that the annotated method will be run in a link:https://en.wikipedia.org/wiki/Database_transaction#Purpose[transactional way].
+Spring Boot automatically begins a transaction when a method marked `@Transactional` is called.
+If that method throws an exception, the framework will "roll back" the transaction so that, if the method has already made some changes in the database, those changes do not take effect.
+In this example it is perhaps unnecessary because we only perform one insertion, but in methods that perform multiple database operations it is important to use transactions to avoid data corruption.
+See the Spring Boot documentation on link:https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html[the `@Transactional` annotation] and link:https://docs.spring.io/spring-framework/reference/data-access/transaction.html[transaction management] for more details.
+
+We can use transactions directly in PostgreSQL using `begin transaction`, `rollback transaction`, and `commit transaction`.
+For example, consider the following scenario.
+
+NOTE: This is not required for the project, but it is good general knowledge if you plan on working with databases in the future.
+
+```
+$ psql -U postgres --dbname event_registration
+Password for user postgres: 
+psql (14.13 (Ubuntu 14.13-0ubuntu0.22.04.1))
+Type "help" for help.
+
+event_registration=# select * from person;
+  id  | creation_date |    email_address     | name  |  password  
+------+---------------+----------------------+-------+------------
+ 1502 | 2024-10-24    | alice@mail.mcgill.ca | Alice | pass123456
+(1 row)
+```
+
+At first, the database contains only one person.
+We begin a transaction, insert a new person, and confirm that the new person is there.
+However, after this, we accidentally wipe the person table.
+We can revert back to the previous state of the database by running `rollback transaction`.
+After rolling back, Alice is still in the database, but Bob is not.
+
+```
+event_registration=# begin transaction;
+BEGIN
+event_registration=*# insert into person values (1, '2024-10-25', 'bob@mail.mcgill.ca', 'Bob', 'pass123');
+INSERT 0 1
+event_registration=*# select * from person;
+  id  | creation_date |    email_address     | name  |  password  
+------+---------------+----------------------+-------+------------
+ 1502 | 2024-10-24    | alice@mail.mcgill.ca | Alice | pass123456
+    1 | 2024-10-25    | bob@mail.mcgill.ca   | Bob   | pass123
+(2 rows)
+
+event_registration=*# delete from person;
+DELETE 2
+event_registration=*# rollback transaction;
+ROLLBACK
+event_registration=# select * from person;
+  id  | creation_date |    email_address     | name  |  password  
+------+---------------+----------------------+-------+------------
+ 1502 | 2024-10-24    | alice@mail.mcgill.ca | Alice | pass123456
+(1 row)
+```
+
+If we instead commit the transaction, the changes take effect as usual.
+
+```
+event_registration=# begin transaction;
+BEGIN
+event_registration=*# insert into person values (1, '2024-10-25', 'bob@mail.mcgill.ca', 'Bob', 'pass123');
+INSERT 0 1
+event_registration=*# commit transaction;
+COMMIT
+event_registration=# select * from person;
+  id  | creation_date |    email_address     | name  |  password  
+------+---------------+----------------------+-------+------------
+ 1502 | 2024-10-24    | alice@mail.mcgill.ca | Alice | pass123456
+    1 | 2024-10-25    | bob@mail.mcgill.ca   | Bob   | pass123
+(2 rows)
+```
+
+IMPORTANT: If you're ever manually working with a database (hopefully only a test database), you should perform updates in a transaction.
+That way you have the option to undo if you make a mistake.
+
+==== Exposing Service Functionality via a RESTful API
+
+===== Building a RESTful Web Service Using a Controller and Data Transfer Objects
+
+To handle receiving HTTP requests and sending responses, we create a separate _controller layer_.
+We put this in a new package called `ca.mcgill.ecse321.eventregistration.controller`.
+
+We also want to define _data transfer objects_ (DTOs) to precisely represent the bodies of the HTTP requests and responses our API accepts.
+Simply using the model classes would cause several problems.
+For example:
+
+- Model classes may have unnecessary or even sensitive information (e.g., a person's password) that should not normally be included in responses.
+- Model classes may have fields that are generated by the server and should not be included in requests (e.g., a person's ID or creation date).
+
+[IMPORTANT]
+DTOs are an entirely different concept from the DAOs (data access objects, a.k.a. CRUD repositories) discussed earlier.
+
+We create yet another package, `ca.mcgill.ecse321.eventregistration.controller`, to store these DTOs.
+
+As an example, we can use the following person DTO in responses.
+
+[source,java]
+----
+package ca.mcgill.ecse321.eventregistration.dto;
+
+import java.time.LocalDate;
+
+import ca.mcgill.ecse321.eventregistration.model.Person;
+
+public class PersonResponseDto {
+    private int id;
+    private String name;
+    private String email;
+    private LocalDate creationDate;
+
+    // Jackson needs a default constructor, but it doesn't need to be public
+    @SuppressWarnings("unused")
+    private PersonResponseDto() {
+    }
+
+    public PersonResponseDto(Person model) {
+        this.id = model.getId();
+        this.name = model.getName();
+        this.email = model.getEmail();
+        this.creationDate = model.getCreationDate().toLocalDate();
+    }
+
+    public LocalDate getCreationDate() {
+        return creationDate;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+----
+
+Note that we omit the password in the DTO above.
+The DTO for requests (e.g., when creating a person for the first time) would be similar, but would *not* have the ID or creation date (these should be generated server-side) and it *should* have the password.
+
+With these DTOs and the `PersonService` in hand, we can finally define a few HTTP endpoints in our controller layer.
+
+[source,java]
+----
+package ca.mcgill.ecse321.eventregistration.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import ca.mcgill.ecse321.eventregistration.dto.PersonRequestDto;
+import ca.mcgill.ecse321.eventregistration.dto.PersonResponseDto;
+import ca.mcgill.ecse321.eventregistration.model.Person;
+import ca.mcgill.ecse321.eventregistration.service.PersonService;
+
+@RestController
+public class PersonController {
+    @Autowired
+    private PersonService personService;
+
+    /**
+     * Return the person with the given ID.
+     *
+     * @param pid The primary key of the person to find.
+     * @return The person with the given ID.
+     */
+    @GetMapping("/people/{pid}")
+    public PersonResponseDto findPersonById(@PathVariable int pid) {
+        Person person = personService.findPersonById(pid);
+        return new PersonResponseDto(person);
+    }
+
+    /**
+     * Create a new person.
+     * 
+     * @param person The person to create.
+     * @return The created person, including their ID.
+     */
+    @PostMapping("/people")
+    public PersonResponseDto createPerson(@RequestBody PersonRequestDto person) {
+        Person createdPerson = personService.createPerson(person.getName(), person.getEmail(), person.getPassword());
+        return new PersonResponseDto(createdPerson);
+    }
+}
+----
+
+The `@GetMapping` annotation indicates that `findPersonById` handles requests to the endpoint `GET /people/{pid}` (where `{pid}` should be replaced by an integer ID).
+Spring Boot will extract the `pid` from the URL for us and pass the value to `findPersonById` via the `pid` parameter.
+`findPersonById` simply calls the service-layer method and then converts the response to a DTO.
+Similarly, the `@PostMapping` annotation indicates that `createPerson` handles requests to `POST /people`.
+Since the `person` parameter is marked `@RequestBody`, Spring Boot will parse the _body_ of the POST request to a `PersonRequestDto`.
+
+===== Trying (Smoke Testing of) the Application
+
+It is often helpful to manually test that our HTTP endpoints are working as expected.
+This can be done using command line tools like `curl` (which is available in Git Bash in a typical Git installation) or GUI tools like Postman or Firefox's Advanced REST Client.
+
+First, start the app using the command `./gradlew bootRun`.
+Using `curl`, we can then send a POST request to `/people` as follows, assuming our app is listening on port 8080.
+```bash
+curl --request POST 'http://localhost:8080/people' --data '{"name": "Alice", "email": "alice.allison@mail.mcgill.ca", "password": "password123"}' --header 'Content-Type: application/json'
+```
+
+We expect a response like this:
+```
+{"id":602,"name":"Alice","email":"alice.allison@mail.mcgill.ca","creationDate":"2024-10-21"}
+```
+
+Notice that the ID and creation date are included in the response, but the password is not (since we used a DTO).
+
+We can then fetch the newly-created person using the ID returned by the backend.
+```bash
+curl --request GET 'http://localhost:8080/people/602'
+```
+
+Since we used the same DTO for the responses of both endpoints, we expect the same output.
