@@ -594,6 +594,24 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_debugging_failing_tests">3.5.3. Debugging Failing Tests</a></li>
 </ul>
 </li>
+<li><a href="#_creating_restful_web_services_in_spring">3.6. Creating RESTful Web Services in Spring</a>
+<ul class="sectlevel3">
+<li><a href="#_implementing_service_methods">3.6.1. Implementing Service Methods</a></li>
+<li><a href="#_exposing_service_functionality_via_a_restful_api">3.6.2. Exposing Service Functionality via a RESTful API</a></li>
+</ul>
+</li>
+<li><a href="#_testing_service_methods_in_backend">3.7. Testing Service Methods in Backend</a>
+<ul class="sectlevel3">
+<li><a href="#_implementing_unit_tests_for_service_class">3.7.1. Implementing Unit Tests for Service Class</a></li>
+<li><a href="#_service_integration_testing_with_springs_testresttemplate">3.7.2. Service Integration Testing with Spring&#8217;s <code>TestRestTemplate</code></a></li>
+</ul>
+</li>
+<li><a href="#_assessing_code_coverage_using_jacoco">3.8. Assessing Code Coverage using JaCoCo</a>
+<ul class="sectlevel3">
+<li><a href="#_event_registration_application_unit_test_code_coverage">3.8.1. Event Registration Application Unit Test Code Coverage</a></li>
+</ul>
+</li>
+<li><a href="#_writing_api_documentation">3.9. Writing API Documentation</a></li>
 </ul>
 </li>
 </ul>
@@ -1791,6 +1809,742 @@ The error messages go from high-level to low-level, so if you find the messages 
 </ul>
 </div>
 </div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_creating_restful_web_services_in_spring">3.6. Creating RESTful Web Services in Spring</h3>
+<div class="paragraph">
+<p>The following steps provide guidance on (1) implementing business logic that implements the required functionality (classes annotated with <code>@Service</code>) and (2) exposing them using a REST API in the context of the Event Registration Application (classes annotated with <code>@RestController</code>).</p>
+</div>
+<div class="sect3">
+<h4 id="_implementing_service_methods">3.6.1. Implementing Service Methods</h4>
+<div class="paragraph">
+<p>We implement use-cases in <em>service classes</em> by using the CRUD repositories for each data type of the domain model.
+In <em>src/main/java</em>, create a new package <code>ca.mcgill.ecse321.eventregistration.service</code>.
+As an example, some simple person-related methods can be implemented as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">ca.mcgill.ecse321.eventregistration.service</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.sql.Date</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.time.LocalDate</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.beans.factory.annotation.Autowired</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.stereotype.Service</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.model.Person</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.repository.PersonRepository</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">jakarta.transaction.Transactional</span>;
+
+<span style="color:#007">@Service</span>
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">PersonService</span> {
+    <span style="color:#007">@Autowired</span>
+    <span style="color:#088;font-weight:bold">private</span> PersonRepository personRepo;
+
+    <span style="color:#088;font-weight:bold">public</span> Person findPersonById(<span style="color:#339;font-weight:bold">int</span> pid) {
+        Person p = personRepo.findPersonById(pid);
+        <span style="color:#080;font-weight:bold">if</span> (p == <span style="color:#069">null</span>) {
+            <span style="color:#080;font-weight:bold">throw</span> <span style="color:#080;font-weight:bold">new</span> <span style="color:#C00;font-weight:bold">IllegalArgumentException</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">There is no person with ID </span><span style="color:#710">&quot;</span></span> + pid + <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">.</span><span style="color:#710">&quot;</span></span>);
+        }
+        <span style="color:#080;font-weight:bold">return</span> p;
+    }
+
+    <span style="color:#007">@Transactional</span>
+    <span style="color:#088;font-weight:bold">public</span> Person createPerson(<span style="color:#0a8;font-weight:bold">String</span> name, <span style="color:#0a8;font-weight:bold">String</span> email, <span style="color:#0a8;font-weight:bold">String</span> password) {
+        <span style="color:#080;font-weight:bold">if</span> (password == <span style="color:#069">null</span> || password.length() &lt; <span style="color:#00D">8</span>) {
+            <span style="color:#080;font-weight:bold">throw</span> <span style="color:#080;font-weight:bold">new</span> <span style="color:#C00;font-weight:bold">IllegalArgumentException</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Password too short.</span><span style="color:#710">&quot;</span></span>);
+        }
+
+        <span style="color:#0a8;font-weight:bold">Date</span> now = <span style="color:#0a8;font-weight:bold">Date</span>.valueOf(LocalDate.now());
+        Person personToCreate = <span style="color:#080;font-weight:bold">new</span> Person(name, email, password, now);
+        <span style="color:#080;font-weight:bold">return</span> personRepo.save(personToCreate);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>@Transactional</code> annotations means that the annotated method will be run in a <a href="https://en.wikipedia.org/wiki/Database_transaction#Purpose">transactional way</a>.
+Spring Boot automatically begins a transaction when a method marked <code>@Transactional</code> is called.
+If that method throws an exception, the framework will "roll back" the transaction so that, if the method has already made some changes in the database, those changes do not take effect.
+In this example it is perhaps unnecessary because we only perform one insertion, but in methods that perform multiple database operations it is important to use transactions to avoid data corruption.
+See the Spring Boot documentation on <a href="https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html">the <code>@Transactional</code> annotation</a> and <a href="https://docs.spring.io/spring-framework/reference/data-access/transaction.html">transaction management</a> for more details.</p>
+</div>
+<div class="paragraph">
+<p>We can use transactions directly in PostgreSQL using <code>begin transaction</code>, <code>rollback transaction</code>, and <code>commit transaction</code>.
+For example, consider the following scenario.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+This is not required for the project, but it is good general knowledge if you plan on working with databases in the future.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>$ psql -U postgres --dbname event_registration
+Password for user postgres:
+psql (14.13 (Ubuntu 14.13-0ubuntu0.22.04.1))
+Type &quot;help&quot; for help.
+
+event_registration=# select * from person;
+  id  | creation_date |    email_address     | name  |  password
+------+---------------+----------------------+-------+------------
+ 1502 | 2024-10-24    | alice@mail.mcgill.ca | Alice | pass123456
+(1 row)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>At first, the database contains only one person.
+We begin a transaction, insert a new person, and confirm that the new person is there.
+However, after this, we accidentally wipe the person table.
+We can revert back to the previous state of the database by running <code>rollback transaction</code>.
+After rolling back, Alice is still in the database, but Bob is not.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>event_registration=# begin transaction;
+BEGIN
+event_registration=*# insert into person values (1, '2024-10-25', 'bob@mail.mcgill.ca', 'Bob', 'pass123');
+INSERT 0 1
+event_registration=*# select * from person;
+  id  | creation_date |    email_address     | name  |  password
+------+---------------+----------------------+-------+------------
+ 1502 | 2024-10-24    | alice@mail.mcgill.ca | Alice | pass123456
+    1 | 2024-10-25    | bob@mail.mcgill.ca   | Bob   | pass123
+(2 rows)
+
+event_registration=*# delete from person;
+DELETE 2
+event_registration=*# rollback transaction;
+ROLLBACK
+event_registration=# select * from person;
+  id  | creation_date |    email_address     | name  |  password
+------+---------------+----------------------+-------+------------
+ 1502 | 2024-10-24    | alice@mail.mcgill.ca | Alice | pass123456
+(1 row)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If we instead commit the transaction, the changes take effect as usual.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>event_registration=# begin transaction;
+BEGIN
+event_registration=*# insert into person values (1, '2024-10-25', 'bob@mail.mcgill.ca', 'Bob', 'pass123');
+INSERT 0 1
+event_registration=*# commit transaction;
+COMMIT
+event_registration=# select * from person;
+  id  | creation_date |    email_address     | name  |  password
+------+---------------+----------------------+-------+------------
+ 1502 | 2024-10-24    | alice@mail.mcgill.ca | Alice | pass123456
+    1 | 2024-10-25    | bob@mail.mcgill.ca   | Bob   | pass123
+(2 rows)</code></pre>
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+If you&#8217;re ever manually working with a database (hopefully only a test database), you should perform updates in a transaction.
+That way you have the option to undo if you make a mistake.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_exposing_service_functionality_via_a_restful_api">3.6.2. Exposing Service Functionality via a RESTful API</h4>
+<div class="sect4">
+<h5 id="_building_a_restful_web_service_using_a_controller_and_data_transfer_objects">Building a RESTful Web Service Using a Controller and Data Transfer Objects</h5>
+<div class="paragraph">
+<p>To handle receiving HTTP requests and sending responses, we create a separate <em>controller layer</em>.
+We put this in a new package called <code>ca.mcgill.ecse321.eventregistration.controller</code>.</p>
+</div>
+<div class="paragraph">
+<p>We also want to define <em>data transfer objects</em> (DTOs) to precisely represent the bodies of the HTTP requests and responses our API accepts.
+Simply using the model classes would cause several problems.
+For example:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Model classes may have unnecessary or even sensitive information (e.g., a person&#8217;s password) that should not normally be included in responses.</p>
+</li>
+<li>
+<p>Model classes may have fields that are generated by the server and should not be included in requests (e.g., a person&#8217;s ID or creation date).</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+DTOs are an entirely different concept from the DAOs (data access objects, a.k.a. CRUD repositories) discussed earlier.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We create yet another package, <code>ca.mcgill.ecse321.eventregistration.controller</code>, to store these DTOs.</p>
+</div>
+<div class="paragraph">
+<p>As an example, we can use the following person DTO in responses.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">ca.mcgill.ecse321.eventregistration.dto</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.time.LocalDate</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.model.Person</span>;
+
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">PersonResponseDto</span> {
+    <span style="color:#088;font-weight:bold">private</span> <span style="color:#339;font-weight:bold">int</span> id;
+    <span style="color:#088;font-weight:bold">private</span> <span style="color:#0a8;font-weight:bold">String</span> name;
+    <span style="color:#088;font-weight:bold">private</span> <span style="color:#0a8;font-weight:bold">String</span> email;
+    <span style="color:#088;font-weight:bold">private</span> LocalDate creationDate;
+
+    <span style="color:#777">// Jackson needs a default constructor, but it doesn't need to be public</span>
+    <span style="color:#007">@SuppressWarnings</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">unused</span><span style="color:#710">&quot;</span></span>)
+    <span style="color:#088;font-weight:bold">private</span> PersonResponseDto() {
+    }
+
+    <span style="color:#088;font-weight:bold">public</span> PersonResponseDto(Person model) {
+        <span style="color:#950">this</span>.id = model.getId();
+        <span style="color:#950">this</span>.name = model.getName();
+        <span style="color:#950">this</span>.email = model.getEmail();
+        <span style="color:#950">this</span>.creationDate = model.getCreationDate().toLocalDate();
+    }
+
+    <span style="color:#088;font-weight:bold">public</span> LocalDate getCreationDate() {
+        <span style="color:#080;font-weight:bold">return</span> creationDate;
+    }
+
+    <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getEmail() {
+        <span style="color:#080;font-weight:bold">return</span> email;
+    }
+
+    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">int</span> getId() {
+        <span style="color:#080;font-weight:bold">return</span> id;
+    }
+
+    <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getName() {
+        <span style="color:#080;font-weight:bold">return</span> name;
+    }
+
+    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> setCreationDate(LocalDate creationDate) {
+        <span style="color:#950">this</span>.creationDate = creationDate;
+    }
+
+    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> setEmail(<span style="color:#0a8;font-weight:bold">String</span> email) {
+        <span style="color:#950">this</span>.email = email;
+    }
+
+    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> setId(<span style="color:#339;font-weight:bold">int</span> id) {
+        <span style="color:#950">this</span>.id = id;
+    }
+
+    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> setName(<span style="color:#0a8;font-weight:bold">String</span> name) {
+        <span style="color:#950">this</span>.name = name;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that we omit the password in the DTO above.
+The DTO for requests (e.g., when creating a person for the first time) would be similar, but would <strong>not</strong> have the ID or creation date (these should be generated server-side) and it <strong>should</strong> have the password.</p>
+</div>
+<div class="paragraph">
+<p>With these DTOs and the <code>PersonService</code> in hand, we can finally define a few HTTP endpoints in our controller layer.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">ca.mcgill.ecse321.eventregistration.controller</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.beans.factory.annotation.Autowired</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.web.bind.annotation.GetMapping</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.web.bind.annotation.PathVariable</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.web.bind.annotation.PostMapping</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.web.bind.annotation.RequestBody</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.web.bind.annotation.RestController</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.dto.PersonRequestDto</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.dto.PersonResponseDto</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.model.Person</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.service.PersonService</span>;
+
+<span style="color:#007">@RestController</span>
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">PersonController</span> {
+    <span style="color:#007">@Autowired</span>
+    <span style="color:#088;font-weight:bold">private</span> PersonService personService;
+
+    <span style="color:#777">/**
+     * Return the person with the given ID.
+     *
+     * @param pid The primary key of the person to find.
+     * @return The person with the given ID.
+     */</span>
+    <span style="color:#007">@GetMapping</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">/people/{pid}</span><span style="color:#710">&quot;</span></span>)
+    <span style="color:#088;font-weight:bold">public</span> PersonResponseDto findPersonById(<span style="color:#007">@PathVariable</span> <span style="color:#339;font-weight:bold">int</span> pid) {
+        Person person = personService.findPersonById(pid);
+        <span style="color:#080;font-weight:bold">return</span> <span style="color:#080;font-weight:bold">new</span> PersonResponseDto(person);
+    }
+
+    <span style="color:#777">/**
+     * Create a new person.
+     *
+     * @param person The person to create.
+     * @return The created person, including their ID.
+     */</span>
+    <span style="color:#007">@PostMapping</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">/people</span><span style="color:#710">&quot;</span></span>)
+    <span style="color:#088;font-weight:bold">public</span> PersonResponseDto createPerson(<span style="color:#007">@RequestBody</span> PersonRequestDto person) {
+        Person createdPerson = personService.createPerson(person.getName(), person.getEmail(), person.getPassword());
+        <span style="color:#080;font-weight:bold">return</span> <span style="color:#080;font-weight:bold">new</span> PersonResponseDto(createdPerson);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>@GetMapping</code> annotation indicates that <code>findPersonById</code> handles requests to the endpoint <code>GET /people/{pid}</code> (where <code>{pid}</code> should be replaced by an integer ID).
+Spring Boot will extract the <code>pid</code> from the URL for us and pass the value to <code>findPersonById</code> via the <code>pid</code> parameter.
+<code>findPersonById</code> simply calls the service-layer method and then converts the response to a DTO.
+Similarly, the <code>@PostMapping</code> annotation indicates that <code>createPerson</code> handles requests to <code>POST /people</code>.
+Since the <code>person</code> parameter is marked <code>@RequestBody</code>, Spring Boot will parse the <em>body</em> of the POST request to a <code>PersonRequestDto</code>.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_trying_smoke_testing_of_the_application">Trying (Smoke Testing of) the Application</h5>
+<div class="paragraph">
+<p>It is often helpful to manually test that our HTTP endpoints are working as expected.
+This can be done using command line tools like <code>curl</code> (which is available in Git Bash in a typical Git installation) or GUI tools like Postman or Firefox&#8217;s Advanced REST Client.</p>
+</div>
+<div class="paragraph">
+<p>First, start the app using the command <code>./gradlew bootRun</code>.
+Using <code>curl</code>, we can then send a POST request to <code>/people</code> as follows, assuming our app is listening on port 8080.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">curl --request POST 'http://localhost:8080/people' --data '{&quot;name&quot;: &quot;Alice&quot;, &quot;email&quot;: &quot;alice.allison@mail.mcgill.ca&quot;, &quot;password&quot;: &quot;password123&quot;}' --header 'Content-Type: application/json'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We expect a response like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>{&quot;id&quot;:602,&quot;name&quot;:&quot;Alice&quot;,&quot;email&quot;:&quot;alice.allison@mail.mcgill.ca&quot;,&quot;creationDate&quot;:&quot;2024-10-21&quot;}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice that the ID and creation date are included in the response, but the password is not (since we used a DTO).</p>
+</div>
+<div class="paragraph">
+<p>We can then fetch the newly-created person using the ID returned by the backend.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">curl --request GET 'http://localhost:8080/people/602'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since we used the same DTO for the responses of both endpoints, we expect the same output.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_testing_service_methods_in_backend">3.7. Testing Service Methods in Backend</h3>
+<div class="sect3">
+<h4 id="_implementing_unit_tests_for_service_class">3.7.1. Implementing Unit Tests for Service Class</h4>
+<div class="paragraph">
+<p>We can unit test our service classes by replacing our real CRUD repository implementations with "mocks," which have the same interface as the real repositories but do not connect to the database.
+We use the Mockito library to define these mocks.</p>
+</div>
+<div class="paragraph">
+<p>Consider the following unit tests for the <code>PersonService</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">ca.mcgill.ecse321.eventregistration.service</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Assertions.assertEquals</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Assertions.assertNotNull</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Assertions.assertThrows</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.mockito.ArgumentMatchers.any</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.mockito.Mockito.times</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.mockito.Mockito.verify</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.mockito.Mockito.when</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.sql.Date</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.time.LocalDate</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Test</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.mockito.InjectMocks</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.mockito.Mock</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.boot.test.context.SpringBootTest</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.exception.EventRegistrationException</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.model.Person</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.repository.PersonRepository</span>;
+
+<span style="color:#007">@SpringBootTest</span>
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">PersonServiceTests</span> {
+    <span style="color:#007">@Mock</span>
+    <span style="color:#088;font-weight:bold">private</span> PersonRepository repo;
+    <span style="color:#007">@InjectMocks</span>
+    <span style="color:#088;font-weight:bold">private</span> PersonService service;
+
+    <span style="color:#007">@SuppressWarnings</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">null</span><span style="color:#710">&quot;</span></span>)
+    <span style="color:#007">@Test</span>
+    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> testCreateValidPerson() {
+        <span style="color:#777">// Arrange</span>
+        <span style="color:#0a8;font-weight:bold">String</span> name = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Bob</span><span style="color:#710">&quot;</span></span>;
+        <span style="color:#0a8;font-weight:bold">String</span> email = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">bob@mail.mcgill.ca</span><span style="color:#710">&quot;</span></span>;
+        <span style="color:#0a8;font-weight:bold">String</span> password = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">12345678</span><span style="color:#710">&quot;</span></span>;
+        Person bob = <span style="color:#080;font-weight:bold">new</span> Person(name, email, password, <span style="color:#0a8;font-weight:bold">Date</span>.valueOf(LocalDate.now()));
+        when(repo.save(any(Person.class))).thenReturn(bob);
+        <span style="color:#777">// You could also do it with thenAnswer(), which is more flexible but more</span>
+        <span style="color:#777">// verbose</span>
+        <span style="color:#777">// when(repo.save(notNull(Person.class))).thenAnswer((InvocationOnMock iom) -&gt;</span>
+        <span style="color:#777">// iom.getArgument(0));</span>
+
+        <span style="color:#777">// Act</span>
+        Person createdPerson = service.createPerson(name, email, password);
+
+        <span style="color:#777">// Assert</span>
+        assertNotNull(createdPerson);
+        assertEquals(name, createdPerson.getName());
+        assertEquals(email, createdPerson.getEmail());
+        assertEquals(password, createdPerson.getPassword());
+        assertEquals(<span style="color:#0a8;font-weight:bold">Date</span>.valueOf(LocalDate.now()), createdPerson.getCreationDate());
+        verify(repo, times(<span style="color:#00D">1</span>)).save(bob);
+    }
+
+    <span style="color:#007">@Test</span>
+    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> testReadPersonByValidId() {
+        <span style="color:#777">// Arrange</span>
+        <span style="color:#339;font-weight:bold">int</span> id = <span style="color:#00D">42</span>;
+        Person charlie = <span style="color:#080;font-weight:bold">new</span> Person(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Charlie</span><span style="color:#710">&quot;</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">charlie@mail.mcgill.ca</span><span style="color:#710">&quot;</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">password123</span><span style="color:#710">&quot;</span></span>, <span style="color:#0a8;font-weight:bold">Date</span>.valueOf(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2024-03-01</span><span style="color:#710">&quot;</span></span>));
+        when(repo.findPersonById(id)).thenReturn(charlie);
+
+        <span style="color:#777">// Act</span>
+        Person person = service.findPersonById(id);
+
+        <span style="color:#777">// Assert</span>
+        assertNotNull(person);
+        assertEquals(charlie.getName(), person.getName());
+        assertEquals(charlie.getEmail(), person.getEmail());
+        assertEquals(charlie.getPassword(), person.getPassword());
+        assertEquals(charlie.getCreationDate(), person.getCreationDate());
+    }
+
+    <span style="color:#007">@Test</span>
+    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> testReadPersonByInvalidId() {
+        <span style="color:#777">// Set up</span>
+        <span style="color:#339;font-weight:bold">int</span> id = <span style="color:#00D">42</span>;
+        <span style="color:#777">// Default is to return null, so you could omit this</span>
+        when(repo.findPersonById(id)).thenReturn(<span style="color:#069">null</span>);
+
+        <span style="color:#777">// Act</span>
+        <span style="color:#777">// Assert</span>
+        EventRegistrationException e = assertThrows(EventRegistrationException.class, () -&gt; service.findPersonById(id));
+        assertEquals(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">There is no person with ID </span><span style="color:#710">&quot;</span></span> + id + <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">.</span><span style="color:#710">&quot;</span></span>, e.getMessage());
+        <span style="color:#777">// assertThrows is basically like the following:</span>
+        <span style="color:#777">// try {</span>
+        <span style="color:#777">// service.findPersonById(id);</span>
+        <span style="color:#777">// fail(&quot;No exception was thrown.&quot;);</span>
+        <span style="color:#777">// } catch (IllegalArgumentException e) {</span>
+        <span style="color:#777">// assertEquals(&quot;There is no person with ID &quot; + id + &quot;.&quot;, e.getMessage());</span>
+        <span style="color:#777">// }</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As usual, we annotate the test class with <code>@SpringBootTest</code> and each test method with <code>@Test</code>.
+Instead of using <code>@Autowired</code> to get a real <code>PersonRepository</code>, we use <code>@Mock</code> to get a mock instance.
+And instead of using <code>@Autowired</code> to get a <code>PersonService</code>, we use <code>@InjectMocks</code>, which constructs a <code>PersonService</code> using the mock <code>PersonRepository</code>.</p>
+</div>
+<div class="paragraph">
+<p>Within each test method, we follow the usual arrange-act-assert template.
+In <code>testCreateValidPerson</code>, the statement <code>when(repo.save(any(Person.class))).thenReturn(bob);</code> instructs the mock repository to return the object <code>bob</code> whenever we call the <code>save</code> method.
+Likewise, in <code>testReadPersonByValidId</code>, <code>when(repo.findPersonById(id)).thenReturn(charlie);</code> instructs the mock repository to return <code>charlie</code> whenever we call <code>findPersonById</code> with the specific value in <code>id</code>.
+By default, the repository will return <code>null</code>, but whenever we expect a different response we must tell the mock what to return.
+These "canned responses" should be similar to the real thing.
+For example, if the real CRUD repositories return <code>null</code> when they can&#8217;t find the person, the mock should also return <code>null</code> when we want to simulate not finding a person.</p>
+</div>
+<div class="paragraph">
+<p>For methods that write to the database (e.g., <code>createPerson</code>), it is also good to check that the right thing was written.
+In <code>testCreateValidPerson</code>, we do this using <code>verify(repo, times(1)).save(bob);</code>, which checks that the <code>save()</code> method was called exactly once with an argument that&#8217;s equal to <code>bob</code>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_service_integration_testing_with_springs_testresttemplate">3.7.2. Service Integration Testing with Spring&#8217;s <code>TestRestTemplate</code></h4>
+<div class="paragraph">
+<p>We already know how to manually test our REST API using <code>curl</code>.
+However, for automated tests, it is convenient to test the application using Spring Boot&#8217;s testing features (such as <code>TestRestTemplate</code>).
+This has a few benefits.
+For example, you can use built-in assertion methods to more precisely specify your test success conditions and you don&#8217;t need any extra steps to integrate these tests into your build system: running <code>./gradlew test</code> will automatically run the integration tests.
+It&#8217;s also nice to be able to see the code coverage for your integration tests, even if it&#8217;s not required for your project.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Create a new integration testing class and annotate it with <code>@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)</code>. This tells Spring to launch the app with a random port (to avoid conflicts if you are already running the app separately).</p>
+</li>
+<li>
+<p>Autowire a <code>TestRestTemplate</code>. This will act as your API client (like the Advanced REST Client, Postman, or <code>curl</code>).</p>
+</li>
+<li>
+<p>Autowire any repositories you need to clear the database before your tests.</p>
+</li>
+<li>
+<p>You can send POST requests to your API using <code>TestRestTemplate.postForEntity()</code>, send GET requests using <code>TestRestTemplate.getForEntity()</code>, and so on. You&#8217;ll need to specify:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A URL (which does not need to include the base URL, since the autowired <code>TestRestTemplate</code> already knows where your app is running)</p>
+</li>
+<li>
+<p>The type of object you expect to receive in response (which should be a DTO).</p>
+</li>
+<li>
+<p>For requests that include a body (e.g., POST), the body</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>A simple suite of integration tests for the <code>Person</code>-related endpoints might look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">ca.mcgill.ecse321.eventregistration.integration</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Assertions.assertEquals</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Assertions.assertNotNull</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Assertions.assertTrue</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.time.LocalDate</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.MethodOrderer</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Order</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Test</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.TestInstance</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.TestInstance.Lifecycle</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.TestMethodOrder</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.beans.factory.annotation.Autowired</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.boot.test.context.SpringBootTest</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.boot.test.context.SpringBootTest.WebEnvironment</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.boot.test.web.client.TestRestTemplate</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.http.HttpStatus</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.http.ResponseEntity</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.dto.ErrorDto</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.dto.PersonRequestDto</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.dto.PersonResponseDto</span>;
+
+<span style="color:#007">@SpringBootTest</span>(webEnvironment = WebEnvironment.RANDOM_PORT)
+<span style="color:#007">@TestMethodOrder</span>(MethodOrderer.OrderAnnotation.class)
+<span style="color:#007">@TestInstance</span>(Lifecycle.PER_CLASS)
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">PersonIntegrationTests</span> {
+    <span style="color:#007">@Autowired</span>
+    <span style="color:#088;font-weight:bold">private</span> TestRestTemplate client;
+
+    <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> VALID_NAME = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Alice</span><span style="color:#710">&quot;</span></span>;
+    <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> VALID_EMAIL = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">alice@mail.mcgill.ca</span><span style="color:#710">&quot;</span></span>;
+    <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> VALID_PASSWORD = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">password123</span><span style="color:#710">&quot;</span></span>;
+    <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> INVALID_PASSWORD = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">123</span><span style="color:#710">&quot;</span></span>;
+    <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">int</span> INVALID_ID = <span style="color:#00D">0</span>;
+    <span style="color:#088;font-weight:bold">private</span> <span style="color:#339;font-weight:bold">int</span> validId;
+
+    <span style="color:#007">@Test</span>
+    <span style="color:#007">@Order</span>(<span style="color:#00D">1</span>)
+    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> testCreateValidPerson() {
+        <span style="color:#777">// Arrange</span>
+        PersonRequestDto request = <span style="color:#080;font-weight:bold">new</span> PersonRequestDto(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
+
+        <span style="color:#777">// Act</span>
+        ResponseEntity&lt;PersonResponseDto&gt; response = client.postForEntity(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">/people</span><span style="color:#710">&quot;</span></span>, request, PersonResponseDto.class);
+
+        <span style="color:#777">// Assert</span>
+        assertNotNull(response);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        PersonResponseDto createdPerson = response.getBody();
+        assertNotNull(createdPerson);
+        assertEquals(VALID_NAME, createdPerson.getName());
+        assertEquals(VALID_EMAIL, createdPerson.getEmail());
+        assertNotNull(createdPerson.getId());
+        assertTrue(createdPerson.getId() &gt; <span style="color:#00D">0</span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Response should have a positive ID.</span><span style="color:#710">&quot;</span></span>);
+        assertEquals(LocalDate.now(), createdPerson.getCreationDate());
+
+        <span style="color:#950">this</span>.validId = createdPerson.getId();
+    }
+
+    <span style="color:#007">@Test</span>
+    <span style="color:#007">@Order</span>(<span style="color:#00D">2</span>)
+    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> testReadPersonByValidId() {
+        <span style="color:#777">// Arrange</span>
+        <span style="color:#0a8;font-weight:bold">String</span> url = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">/people/</span><span style="color:#710">&quot;</span></span> + <span style="color:#950">this</span>.validId;
+
+        <span style="color:#777">// Act</span>
+        ResponseEntity&lt;PersonResponseDto&gt; response = client.getForEntity(url, PersonResponseDto.class);
+
+        <span style="color:#777">// Assert</span>
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        PersonResponseDto person = response.getBody();
+        assertNotNull(person);
+        assertEquals(VALID_NAME, person.getName());
+        assertEquals(VALID_EMAIL, person.getEmail());
+        assertEquals(<span style="color:#950">this</span>.validId, person.getId());
+        assertEquals(LocalDate.now(), person.getCreationDate());
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice that this test code uses the annotations <code>@TestMethodOrder(MethodOrderer.OrderAnnotation.class)</code> and <code>@Order</code> to ensure the tests run in a predictable order.
+We also add the annotation <code>@TestInstance(Lifecycle.PER_CLASS)</code> so that JUnit uses the same instance of <code>PersonIntegrationTests</code> for each test method.
+By default, JUnit would create a new instance per method and tests that rely on a field having been set by a previous test (in this example, <code>testReadPersonByInvalidId</code>) would fail.
+Requiring tests to run in a specific order is <strong>not</strong> good practice for unit tests, but some people consider it acceptable for integration testing.
+If the order-dependence makes you uncomfortable, you can merge tests that depend on one another into one test.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_assessing_code_coverage_using_jacoco">3.8. Assessing Code Coverage using JaCoCo</h3>
+<div class="paragraph">
+<p>This tutorial covers the basics of setting up JaCoCo as a gradle plugin to assess code coverage during tests.</p>
+</div>
+<div class="sect3">
+<h4 id="_event_registration_application_unit_test_code_coverage">3.8.1. Event Registration Application Unit Test Code Coverage</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>To assess code coverage using the <em>Jacoco</em> plugin for gradle, use the plugin ID <code>jacoco</code>. By adding it to the <em>build.gradle</em> file, your file should look like this:</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="gradle">plugins {
+        id 'org.springframework.boot' version '2.2.4.RELEASE'
+        id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+        id 'java'
+        id 'jacoco'
+}
+
+//...other configurations
+
+tasks.named('test') {
+        useJUnitPlatform()
+        testLogging {
+                exceptionFormat &quot;full&quot;
+                events &quot;passed&quot;, &quot;failed&quot;
+         }
+        finalizedBy jacocoTestReport
+}
+
+tasks.named('jacocoTestReport') {
+    dependsOn test // tests are required to run before generating the report
+}</code></pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>This new plugin gives us the <code>jacocoTestReport</code> task that can generate html reports. Try executing this task from the terminal and see the generated HTML files under <em>build/reports/jacoco/test/html/</em>!</p>
+</li>
+<li>
+<p>If you wish, you can check enforce a certain threshold on the test cases with this Jacoco plugin. With the definition below, the <code>./gradlew jacocoTestCoverageVerification</code> task will fail if code coverage is below 60%. A good coverage to aspire to is 75% or greater. Achieving 100 % coverage is often impractical.</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="gradle">tasks.named('test') {
+        //...other configurations
+        finalizedBy jacocoTestCoverageVerification
+}
+
+tasks.named('jacocoTestCoverageVerification') {
+        violationRules {
+                rule {
+                        limit {
+                                minimum = 0.6
+                        }
+                }
+        }
+        dependsOn test // tests are required to run before checking code coverage.
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_writing_api_documentation">3.9. Writing API Documentation</h3>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+If your API documentation is not simply a wiki page, you must clearly document in your project wiki how to access the API documentation.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+If you use springdoc, make sure you use the right version for your Spring Boot version (<a href="https://springdoc.org/" class="bare">https://springdoc.org/</a> for Spring Boot v3, <a href="https://springdoc.org/v1/" class="bare">https://springdoc.org/v1/</a> for Spring Boot v1 or v2). Your Spring Boot version is displayed when you start your app with <code>./gradlew bootRun</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>There are tools that can assist you in producing nice documentation for your API.
+For example, the springdoc-openapi library can generate an HTML page describing each endpoint and the request and response formats (see <a href="https://springdoc.org/#getting-started" class="bare">https://springdoc.org/#getting-started</a>).
+Note that:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The dependency at <a href="https://springdoc.org/#getting-started" class="bare">https://springdoc.org/#getting-started</a> is specified using XML, as required by other build systems like <a href="https://maven.apache.org/">Maven</a>. In Gradle, you would instead add the dependency as <code>implementation groupId:artifactId:version</code>.</p>
+</li>
+<li>
+<p>The springdoc website mentions the context path of your app. This is "/" by default, so you should be able to access your documentation at <a href="http://localhost:8080/swagger-ui.html" class="bare">http://localhost:8080/swagger-ui.html</a> (assuming your backend is listening on port 8080).</p>
+</li>
+<li>
+<p>To learn more about Swagger UI, please visit the <a href="https://swagger.io/tools/swagger-ui/">official website</a>, or check this <a href="https://www.youtube.com/watch?v=GxAu8UjLfbM">video</a>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>springdoc can also include information from Javadoc comments (see <a href="https://springdoc.org/#javadoc-support" class="bare">https://springdoc.org/#javadoc-support</a>).</p>
 </div>
 </div>
 </div>
