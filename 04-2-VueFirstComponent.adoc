@@ -1,0 +1,149 @@
+=== Create a Static Vue.js Component
+
+Vue.js promotes the use of https://vuejs.org/guide/essentials/component-basics.html[components] which encapsulate GUI elements and their behavior in order to build up rich user interfaces in a modular way.
+A component consists of
+
+* **template**: A template of (a part of) an HTML document enriched with data bindings, conditional expressions, loops, etc.
+* **script**: The behavior of the user interface programmed in JavaScript.
+* **style**: The customized graphical appearance of HTML document elements.
+
+We will first create a new Vue.js component and then connect it to a backend Java Spring service via HTTP requests.
+
+==== Create a component file
+
+[NOTE]
+We use `.` below to refer to the `EventRegistration-Frontend` directory.
+
+Create a new file `EventsView.vue` in `./src/views` with the following initial content:
+
+[source,html]
+----
+<template>
+</template>
+
+<script>
+</script>
+
+<style>
+</style>
+----
+
+Create some static HTML content of the template part starting with a `<main>` element corresponding to your component.
+
+[source,xml]
+----
+<template>
+    <main>
+        <h1>Event Registration</h1>
+        <h2>New Event</h2>
+        <div>
+            <select>
+                <option value="IN_PERSON">In person</option>
+                <option value="ONLINE">Online</option>
+            </select>
+            <input type="text" placeholder="Name" />
+            <input type="date" placeholder="Date" />
+            <input type="time" placeholder="Start Time" />
+            <input type="time" placeholder="End Time" />
+            <input type="text" placeholder="Registration Limit" />
+            <input type="text" placeholder="Location" />
+            <button>Create Event</button>
+            <button class="danger-btn">Clear</button>
+        </div>
+        <h2>Events</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                </tr>
+                <tr>
+                    <td>My In-Person Event</td>
+                    <td>2024-11-15</td>
+                    <td>In person</td>
+                </tr>
+                <tr>
+                    <td>My Online Event</td>
+                    <td>2024-11-15</td>
+                    <td>Online</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+</template>
+----
+
+
+Customize the `<style>` part with your designated CSS content.
+A detailed CSS reference documentation is available at https://developer.mozilla.org/en-US/docs/Web/CSS.
+For example, we can use the following styles to
+
+. Make the table fill the entire width of the page.
+. Underline the sub-headings and add some padding above them.
+. Tweak the style of the table (get rid of the spacing between cells, add padding within cells, and make the border white).
+. Make the "Clear" button red.
+
+[source,HTML]
+----
+<style>
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+h2 {
+    padding-top: 1em;
+    text-decoration: underline;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td, th {
+	border: 1px solid var(--color-border);
+	padding: 0.25em;
+}
+
+.danger-btn {
+    border: 1px solid red;
+    color: red;
+}
+</style>
+----
+
+==== Create a new routing command
+
+By default, going to http://localhost:8087/ brings us to the initial "Home" view, not our events view.
+We change this in `./src/router/index.js`.
+Move the existing `HomeView` entry to a different URL (e.g., `/hello`) and create a new entry for the events view.
+
+[source,javascript]
+----
+import EventsView from '@/views/EventsView.vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/',
+      name: 'events',
+      component: EventsView,
+    },
+    {
+      path: '/hello',
+      name: 'home',
+      component: HomeView
+    },
+    // etc.
+  ],
+})
+
+export default router
+----
+
+If you go to `http://localhost:8087` now, you should see the events view.

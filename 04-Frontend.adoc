@@ -1,0 +1,15 @@
+== Frontend
+
+include::04-1-InstallVue.adoc[]
+
+include::04-2-VueFirstComponent.adoc[]
+
+include::04-3-DynamicVue.adoc[]
+
+include::04-4-CallingBackend.adoc[]
+
+=== Further documentation
+
+* MDN web docs for general HTML, CSS, and JavaScript questions: https://developer.mozilla.org/en-US/docs/Web/JavaScript
+* Vue.js guide: https://vuejs.org/guide/introduction.html
+* Vue router guide: https://router.vuejs.org/guide/

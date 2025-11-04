@@ -234,7 +234,7 @@ public class PersonController {
      * @param pid The primary key of the person to find.
      * @return The person with the given ID.
      */
-    @GetMapping("/people/{pid}")
+    @GetMapping("/person/{pid}")
     public PersonResponseDto findPersonById(@PathVariable int pid) {
         Person person = personService.findPersonById(pid);
         return new PersonResponseDto(person);
@@ -246,7 +246,7 @@ public class PersonController {
      * @param person The person to create.
      * @return The created person, including their ID.
      */
-    @PostMapping("/people")
+    @PostMapping("/person")
     public PersonResponseDto createPerson(@RequestBody PersonRequestDto person) {
         Person createdPerson = personService.createPerson(person.getName(), person.getEmail(), person.getPassword());
         return new PersonResponseDto(createdPerson);
@@ -254,10 +254,10 @@ public class PersonController {
 }
 ----
 
-The `@GetMapping` annotation indicates that `findPersonById` handles requests to the endpoint `GET /people/{pid}` (where `{pid}` should be replaced by an integer ID).
+The `@GetMapping` annotation indicates that `findPersonById` handles requests to the endpoint `GET /person/{pid}` (where `{pid}` should be replaced by an integer ID).
 Spring Boot will extract the `pid` from the URL for us and pass the value to `findPersonById` via the `pid` parameter.
 `findPersonById` simply calls the service-layer method and then converts the response to a DTO.
-Similarly, the `@PostMapping` annotation indicates that `createPerson` handles requests to `POST /people`.
+Similarly, the `@PostMapping` annotation indicates that `createPerson` handles requests to `POST /person`.
 Since the `person` parameter is marked `@RequestBody`, Spring Boot will parse the _body_ of the POST request to a `PersonRequestDto`.
 
 ===== Trying (Smoke Testing of) the Application
@@ -266,9 +266,9 @@ It is often helpful to manually test that our HTTP endpoints are working as expe
 This can be done using command line tools like `curl` (which is available in Git Bash in a typical Git installation) or GUI tools like Postman or Firefox's Advanced REST Client.
 
 First, start the app using the command `./gradlew bootRun`.
-Using `curl`, we can then send a POST request to `/people` as follows, assuming our app is listening on port 8080.
+Using `curl`, we can then send a POST request to `/person` as follows, assuming our app is listening on port 8080.
 ```bash
-curl --request POST 'http://localhost:8080/people' --data '{"name": "Alice", "email": "alice.allison@mail.mcgill.ca", "password": "password123"}' --header 'Content-Type: application/json'
+curl --request POST 'http://localhost:8080/person' --data '{"name": "Alice", "email": "alice.allison@mail.mcgill.ca", "password": "password123"}' --header 'Content-Type: application/json'
 ```
 
 We expect a response like this:
@@ -280,7 +280,7 @@ Notice that the ID and creation date are included in the response, but the passw
 
 We can then fetch the newly-created person using the ID returned by the backend.
 ```bash
-curl --request GET 'http://localhost:8080/people/602'
+curl --request GET 'http://localhost:8080/person/602'
 ```
 
 Since we used the same DTO for the responses of both endpoints, we expect the same output.

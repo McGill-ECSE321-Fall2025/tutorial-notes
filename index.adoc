@@ -18,3 +18,9 @@ include::01-Requirements.adoc[]
 include::02-PMT-TC.adoc[]
 
 include::03-Backend.adoc[]
+
+include::04-Frontend.adoc[]
+
+== Working Example
+
+A working version of the app is available at https://github.com/McGill-ECSE321-Fall2025/event-registration.

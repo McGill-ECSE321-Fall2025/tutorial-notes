@@ -1,0 +1,98 @@
+=== Installation Instructions: Vue.js
+:experimental:
+
+https://vuejs.org/v2/guide/[Vue.js] is a popular web frontend for building user interfaces in Javascript, which is considered to be easier to learn compared to https://reactjs.org/[React] and https://angular.io/[Angular].
+
+Before installing Vue.js, you will need to install https://nodejs.org/en/download[node.js] and npm (this comes with Node by default).
+
+==== Install Vue.js
+
+. Open a shell or terminal.
+
+. Check that you successfully installed **node.js** and **npm** e.g. by checking their versions:
++
+[source,bash]
+----
+$ node -v
+v22.11.0
+$ npm -v
+v10.9.0
+----
+
+. Navigate to your local Git repository of the Event Registration System
++
+[source,bash]
+----
+$ cd ~/git/eventregistration
+----
+
+. Generate initial content using the command `npm create vue@latest` (see https://github.com/vuejs/create-vue). For the tutorial code, we use the setup below.
+
++
+[source]
+----
+$ npm create vue@latest
+
+> npx
+> create-vue
+
+
+Vue.js - The Progressive JavaScript Framework
+
+✔ Project name: … EventRegistration-Frontend
+✔ Package name: … eventregistration-frontend
+✔ Add TypeScript? … No
+✔ Add JSX Support? … No
+✔ Add Vue Router for Single Page Application development? … Yes
+✔ Add Pinia for state management? … No
+✔ Add Vitest for Unit Testing? … No
+✔ Add an End-to-End Testing Solution? › No
+✔ Add ESLint for code quality? › No
+
+Scaffolding project in /home/louis-ta/dev/eventregistration/EventRegistration-Frontend...
+
+Done. Now run:
+
+  cd EventRegistration-Frontend
+  npm install
+  npm run dev
+----
+
+. Now execute those commands one after the other to move into the `EventRegistration-Frontend diectory`, install the dependencies, and start the frontend server.
+
+. The command `npm run dev` should output the URL of the development server (e.g., http://localhost:5173/).
+
+. You can stop this development server by pressing kbd:[Ctrl+C] in the shell
+
+==== Setting up your development server
+
+If you want to change the port for the frontend server (e.g., in case another app is already using it), you can do so in `vite.config.js`.
+Set `server.port` to be the new port number.
+
+[source,js]
+----
+export default defineConfig({
+  plugins: [
+    vue(),
+    vueDevTools(),
+  ],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    },
+  },
+  // Added
+  server: {
+    port: 8087
+  }
+})
+----
+
+If you start your development server again using `npm run dev`, the same web application should now appear at http://localhost:8087/
+Stop the development server by pressing kbd:[Ctrl+C].
+
+==== Commit your work to Github
+
+. If everything works then commit your work to your Github repository.
+
+. Notice that many libraries and files are omitted, which is intentional. Check the `.gitignore` file for details.

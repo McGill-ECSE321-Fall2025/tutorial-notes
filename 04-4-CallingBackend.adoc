@@ -1,0 +1,118 @@
+=== Calling Backend Services
+
+Next we change our frontend to issue calls to the backend via the Rest API provided by the Java Spring framework.
+
+==== Install additional dependencies
+
+Add Axios as a dependency.
+We will use Axios for issuing REST API calls.
+```bash
+npm install axios@1.5
+```
+
+==== Calling backend services in from Vue.js components
+
+In the `<script>` block of `EventsView.vue`, create a new Axios client:
+
+[source,javascript]
+----
+<script>
+import axios from "axios";
+
+const axiosClient = axios.create({
+	// NOTE: it's baseURL, not baseUrl
+	baseURL: "http://localhost:8080"
+});
+
+export default {
+  // ...
+}
+</script>
+----
+
+[NOTE]
+For simplicity we hard-code the backend URL here, but generally you'd put it in a config file instead.
+
+To get the list of events when the page loads, we can send an HTTP request in the `created()` method:
+
+[source,javascript]
+----
+<script>
+// ...
+
+export default {
+  // ...
+  async created() {
+    try {
+      const response = await axiosClient.get("/events");
+    } catch (e) {
+      // TODO: Show a message to the user or something
+      console.error(e);
+    }
+  }
+  // ...
+};
+</script>
+----
+
+We mark the `created` method `async` and use `await` when sending the request so that we can use try/catch for exception handling.
+See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function.
+
+To send newly-created events to the backend, we update the `createEvent` method as follows:
+
+[source,javascript]
+----
+<script>
+// ...
+
+export default {
+  // ...
+  methods: {
+    async createEvent() {
+      const newEvent = {
+        type: this.newEventType,
+        name: this.newEventName,
+        date: this.newEventDate,
+        startTime: this.newEventStartTime,
+        endTime: this.newEventEndTime,
+        registrationLimit: this.newEventRegLimit,
+        location: this.newEventLocation
+      };
+      try {
+        const response = await axiosClient.post("/events", newEvent);
+      } catch (e) {
+        // TODO: show a message to the user or something
+        console.error(e);
+      }
+      this.events.push(response.data);
+      this.clearInputs();
+    },
+    // ...
+  }
+};
+</script>
+----
+
+If you run the frontend, you should see that you can now create an event and it'll appear in the events list.
+Furthermore, the event will remain in the list if you refresh the page.
+
+Note that, at first, you will likely run into CORS (link:https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS[Cross-Origin Resource Sharing]) errors.
+You must add the `@CrossOrigin` annotation to your controller classes to allow requests from your frontend.
+
+[NOTE]
+You can also use wildcards in the `@CrossOrigin` annotation, as in `@CrossOrigin(origin = "\*")`.
+This allows cross-origin requests from *any* domain, which is less secure but possibly more convenient.
+
+[source,java]
+----
+package ca.mcgill.ecse321.eventregistration.controller;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@CrossOrigin(origins = "http://localhost:8087")
+public class EventController {
+  // ...
+}
+----

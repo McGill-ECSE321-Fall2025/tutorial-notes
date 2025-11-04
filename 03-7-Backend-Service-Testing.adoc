@@ -183,7 +183,7 @@ public class PersonIntegrationTests {
         PersonRequestDto request = new PersonRequestDto(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
 
         // Act
-        ResponseEntity<PersonResponseDto> response = client.postForEntity("/people", request, PersonResponseDto.class);
+        ResponseEntity<PersonResponseDto> response = client.postForEntity("/person", request, PersonResponseDto.class);
 
         // Assert
         assertNotNull(response);
@@ -203,7 +203,7 @@ public class PersonIntegrationTests {
     @Order(2)
     public void testReadPersonByValidId() {
         // Arrange
-        String url = "/people/" + this.validId;
+        String url = "/person/" + this.validId;
 
         // Act
         ResponseEntity<PersonResponseDto> response = client.getForEntity(url, PersonResponseDto.class);

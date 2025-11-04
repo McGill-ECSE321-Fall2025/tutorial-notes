@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.23">
+<meta name="generator" content="Asciidoctor 2.0.22">
 <title>ECSE 321 Introduction to Software Engineering: Tutorial</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -433,118 +433,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
-<style>
-/*! Asciidoctor Tabs | Copyright (c) 2018-present Dan Allen | MIT License */
-.tabs {
-    margin-bottom: 1.25em;
-}
-
-.tablist > ul {
-    display: flex;
-    flex-wrap: wrap;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.tablist > ul li {
-    align-items: center;
-    background-color: #fff;
-    cursor: pointer;
-    display: flex;
-    font-weight: bold;
-    line-height: 1.5;
-    padding: 0.25em 1em;
-    position: relative;
-}
-
-.tablist > ul li:focus-visible {
-    outline: none;
-}
-
-.tablist.ulist,
-.tablist.ulist > ul li {
-    margin: 0;
-}
-
-.tablist.ulist > ul li + li {
-    margin-left: 0.25em;
-}
-
-.tabs .tablist li::after {
-    content: "";
-    display: block;
-    height: 1px;
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-}
-
-.tabs.is-loading .tablist li:not(:first-child),
-.tabs:not(.is-loading) .tablist li:not(.is-selected) {
-    background-color: #f5f5f5;
-}
-
-.tabs.is-loading .tablist li:first-child::after,
-.tabs:not(.is-loading) .tablist li.is-selected::after {
-    background-color: #fff;
-}
-
-/*
-.tabs:not(.is-loading) .tablist li,
-.tabs:not(.is-loading) .tablist li::after {
-  transition: background-color 200ms ease-in-out;
-}
-*/
-
-.tablist > ul p {
-    line-height: inherit;
-    margin: 0;
-}
-
-.tabpanel {
-    background-color: #fff;
-    padding: 1.25em;
-}
-
-.tablist > ul li,
-.tabpanel {
-    border: 1px solid #dcdcdc;
-}
-
-.tablist > ul li {
-    border-bottom: 0;
-}
-
-.tabs.is-loading .tabpanel + .tabpanel,
-.tabs:not(.is-loading) .tabpanel.is-hidden {
-    display: none;
-}
-
-.tabpanel > :first-child {
-    margin-top: 0;
-}
-
-/* #content is a signature of the Asciidoctor standalone HTML output */
-#content .tabpanel > :last-child,
-#content .tabpanel > :last-child > :last-child,
-#content .tabpanel > :last-child > :last-child > li:last-child > :last-child {
-    margin-bottom: 0;
-}
-
-.tablecontainer {
-    overflow-x: auto;
-}
-
-#content .tablecontainer {
-    margin-bottom: 1.25em;
-}
-
-#content .tablecontainer > table.tableblock {
-    margin-bottom: 0;
-}
-</style>
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
@@ -614,6 +502,32 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_writing_api_documentation">3.9. Writing API Documentation</a></li>
 </ul>
 </li>
+<li><a href="#_frontend">4. Frontend</a>
+<ul class="sectlevel2">
+<li><a href="#_installation_instructions_vue_js">4.1. Installation Instructions: Vue.js</a>
+<ul class="sectlevel3">
+<li><a href="#_install_vue_js">4.1.1. Install Vue.js</a></li>
+<li><a href="#_setting_up_your_development_server">4.1.2. Setting up your development server</a></li>
+<li><a href="#_commit_your_work_to_github">4.1.3. Commit your work to Github</a></li>
+</ul>
+</li>
+<li><a href="#_create_a_static_vue_js_component">4.2. Create a Static Vue.js Component</a>
+<ul class="sectlevel3">
+<li><a href="#_create_a_component_file">4.2.1. Create a component file</a></li>
+<li><a href="#_create_a_new_routing_command">4.2.2. Create a new routing command</a></li>
+</ul>
+</li>
+<li><a href="#_vue_js_components_with_dynamic_content">4.3. Vue.js Components with Dynamic Content</a></li>
+<li><a href="#_calling_backend_services">4.4. Calling Backend Services</a>
+<ul class="sectlevel3">
+<li><a href="#_install_additional_dependencies">4.4.1. Install additional dependencies</a></li>
+<li><a href="#_calling_backend_services_in_from_vue_js_components">4.4.2. Calling backend services in from Vue.js components</a></li>
+</ul>
+</li>
+<li><a href="#_further_documentation">4.5. Further documentation</a></li>
+</ul>
+</li>
+<li><a href="#_working_example">5. Working Example</a></li>
 </ul>
 </div>
 </div>
@@ -1304,7 +1218,7 @@ In <code>psql</code>, create a new database for the event registration app using
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code>CREATE DATABASE event_registration;</code></pre>
+<pre class="highlight"><code>CREATE DATABASE event_registration;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1383,7 +1297,7 @@ Your Git repository should look something like this:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code>.
+<pre class="highlight"><code>.
 ├── EventRegistration-Backend
 │   ├── build.gradle
 │   ├── gradle
@@ -1424,7 +1338,7 @@ Your Git repository should look something like this:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code>spring.datasource.driver-class-name = org.postgresql.Driver
+<pre class="highlight"><code>spring.datasource.driver-class-name = org.postgresql.Driver
 
 # What to do with existing database tables on startup and shutdown.
 # See https://docs.spring.io/spring-boot/how-to/data-initialization.html#howto.data-initialization.using-hibernate.
@@ -1551,7 +1465,7 @@ Make sure your model files declare the package:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">ca.mcgill.ecse321.eventregistration.model</span>;</code></pre>
+<pre class="highlight"><code class="language-java" data-lang="java">package ca.mcgill.ecse321.eventregistration.model;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1559,7 +1473,7 @@ Make sure your model files declare the package:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="none">.
+<pre class="highlight"><code class="language-none" data-lang="none">.
 ├── EventRegistration-Backend
 │   ├── build.gradle
 │   ├── gradle
@@ -1662,15 +1576,15 @@ There should be one table per model class.</p>
 <em>PersonRepository.java</em></p>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">ca.mcgill.ecse321.eventregistration.repository</span>;
+<pre class="highlight"><code class="language-java" data-lang="java">package ca.mcgill.ecse321.eventregistration.repository;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.data.repository.CrudRepository</span>;
+import org.springframework.data.repository.CrudRepository;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.model.Person</span>;
+import ca.mcgill.ecse321.eventregistration.model.Person;
 
-<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">interface</span> <span style="color:#B06;font-weight:bold">PersonRepository</span> <span style="color:#088;font-weight:bold">extends</span> CrudRepository&lt;Person, <span style="color:#0a8;font-weight:bold">Integer</span>&gt;{
+public interface PersonRepository extends CrudRepository&lt;Person, Integer&gt;{
 
-        Person findPersonById(<span style="color:#339;font-weight:bold">int</span> id);
+	Person findPersonById(int id);
 
 }</code></pre>
 </div>
@@ -1723,40 +1637,40 @@ There should be one table per model class.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span style="color:#007">@SpringBootTest</span>
-<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">PersonRepositoryTests</span> {
-        <span style="color:#007">@Autowired</span>
-        <span style="color:#088;font-weight:bold">private</span> PersonRepository personRepository;
+<pre class="highlight"><code class="language-java" data-lang="java">@SpringBootTest
+public class PersonRepositoryTests {
+	@Autowired
+	private PersonRepository personRepository;
 
-        <span style="color:#007">@AfterEach</span>
-        <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> clearDatabase() {
-                personRepository.deleteAll();
-        }
+	@AfterEach
+	public void clearDatabase() {
+		personRepository.deleteAll();
+	}
 
-        <span style="color:#007">@Test</span>
-        <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> testPersistAndLoadPerson() {
-                <span style="color:#777">// Create person</span>
-                <span style="color:#0a8;font-weight:bold">String</span> name = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Muffin Man</span><span style="color:#710">&quot;</span></span>;
-                <span style="color:#0a8;font-weight:bold">String</span> emailAddress = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">muffin.man@gmail.com</span><span style="color:#710">&quot;</span></span>;
-                <span style="color:#0a8;font-weight:bold">String</span> password = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">i_love_muffins</span><span style="color:#710">&quot;</span></span>;
-                Person muffinMan = <span style="color:#080;font-weight:bold">new</span> Person();
-                muffinMan.setName(name);
-                muffinMan.setEmailAddress(emailAddress);
-                muffinMan.setPassword(password);
+	@Test
+	public void testPersistAndLoadPerson() {
+		// Create person
+		String name = "Muffin Man";
+		String emailAddress = "muffin.man@gmail.com";
+		String password = "i_love_muffins";
+		Person muffinMan = new Person();
+		muffinMan.setName(name);
+		muffinMan.setEmailAddress(emailAddress);
+		muffinMan.setPassword(password);
 
-                <span style="color:#777">// Save person</span>
-                muffinMan = personRepository.save(person);
-                <span style="color:#339;font-weight:bold">int</span> id = muffinMan.getId();
+		// Save person
+		muffinMan = personRepository.save(person);
+		int id = muffinMan.getId();
 
-                <span style="color:#777">// Read person from database</span>
-                Person muffinManFromDb = personRepository.findPersonById(id);
+		// Read person from database
+		Person muffinManFromDb = personRepository.findPersonById(id);
 
-                <span style="color:#777">// Assert correct response</span>
-                assertNotNull(person);
-                assertEquals(muffinManFromDb.getName(), name);
-                assertEquals(muffinManFromDb.getEmailAddress(), emailAddress);
-                assertEquals(muffinManFromDb.getPassword(), password);
-        }
+		// Assert correct response
+		assertNotNull(person);
+		assertEquals(muffinManFromDb.getName(), name);
+		assertEquals(muffinManFromDb.getEmailAddress(), emailAddress);
+		assertEquals(muffinManFromDb.getPassword(), password);
+	}
 }</code></pre>
 </div>
 </div>
@@ -1774,9 +1688,9 @@ There should be one table per model class.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code>testLogging {
-        exceptionFormat &quot;full&quot;
-        //...other configurations
+<pre class="highlight"><code>testLogging {
+	exceptionFormat "full"
+	//...other configurations
 }</code></pre>
 </div>
 </div>
@@ -1825,40 +1739,40 @@ As an example, some simple person-related methods can be implemented as follows:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">ca.mcgill.ecse321.eventregistration.service</span>;
+<pre class="highlight"><code class="language-java" data-lang="java">package ca.mcgill.ecse321.eventregistration.service;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.sql.Date</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.time.LocalDate</span>;
+import java.sql.Date;
+import java.time.LocalDate;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.beans.factory.annotation.Autowired</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.stereotype.Service</span>;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.model.Person</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.repository.PersonRepository</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">jakarta.transaction.Transactional</span>;
+import ca.mcgill.ecse321.eventregistration.model.Person;
+import ca.mcgill.ecse321.eventregistration.repository.PersonRepository;
+import jakarta.transaction.Transactional;
 
-<span style="color:#007">@Service</span>
-<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">PersonService</span> {
-    <span style="color:#007">@Autowired</span>
-    <span style="color:#088;font-weight:bold">private</span> PersonRepository personRepo;
+@Service
+public class PersonService {
+    @Autowired
+    private PersonRepository personRepo;
 
-    <span style="color:#088;font-weight:bold">public</span> Person findPersonById(<span style="color:#339;font-weight:bold">int</span> pid) {
+    public Person findPersonById(int pid) {
         Person p = personRepo.findPersonById(pid);
-        <span style="color:#080;font-weight:bold">if</span> (p == <span style="color:#069">null</span>) {
-            <span style="color:#080;font-weight:bold">throw</span> <span style="color:#080;font-weight:bold">new</span> <span style="color:#C00;font-weight:bold">IllegalArgumentException</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">There is no person with ID </span><span style="color:#710">&quot;</span></span> + pid + <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">.</span><span style="color:#710">&quot;</span></span>);
+        if (p == null) {
+            throw new IllegalArgumentException("There is no person with ID " + pid + ".");
         }
-        <span style="color:#080;font-weight:bold">return</span> p;
+        return p;
     }
 
-    <span style="color:#007">@Transactional</span>
-    <span style="color:#088;font-weight:bold">public</span> Person createPerson(<span style="color:#0a8;font-weight:bold">String</span> name, <span style="color:#0a8;font-weight:bold">String</span> email, <span style="color:#0a8;font-weight:bold">String</span> password) {
-        <span style="color:#080;font-weight:bold">if</span> (password == <span style="color:#069">null</span> || password.length() &lt; <span style="color:#00D">8</span>) {
-            <span style="color:#080;font-weight:bold">throw</span> <span style="color:#080;font-weight:bold">new</span> <span style="color:#C00;font-weight:bold">IllegalArgumentException</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Password too short.</span><span style="color:#710">&quot;</span></span>);
+    @Transactional
+    public Person createPerson(String name, String email, String password) {
+        if (password == null || password.length() &lt; 8) {
+            throw new IllegalArgumentException("Password too short.");
         }
 
-        <span style="color:#0a8;font-weight:bold">Date</span> now = <span style="color:#0a8;font-weight:bold">Date</span>.valueOf(LocalDate.now());
-        Person personToCreate = <span style="color:#080;font-weight:bold">new</span> Person(name, email, password, now);
-        <span style="color:#080;font-weight:bold">return</span> personRepo.save(personToCreate);
+        Date now = Date.valueOf(LocalDate.now());
+        Person personToCreate = new Person(name, email, password, now);
+        return personRepo.save(personToCreate);
     }
 }</code></pre>
 </div>
@@ -1888,10 +1802,10 @@ This is not required for the project, but it is good general knowledge if you pl
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code>$ psql -U postgres --dbname event_registration
+<pre class="highlight"><code>$ psql -U postgres --dbname event_registration
 Password for user postgres:
 psql (14.13 (Ubuntu 14.13-0ubuntu0.22.04.1))
-Type &quot;help&quot; for help.
+Type "help" for help.
 
 event_registration=# select * from person;
   id  | creation_date |    email_address     | name  |  password
@@ -1909,7 +1823,7 @@ After rolling back, Alice is still in the database, but Bob is not.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code>event_registration=# begin transaction;
+<pre class="highlight"><code>event_registration=# begin transaction;
 BEGIN
 event_registration=*# insert into person values (1, '2024-10-25', 'bob@mail.mcgill.ca', 'Bob', 'pass123');
 INSERT 0 1
@@ -1936,7 +1850,7 @@ event_registration=# select * from person;
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code>event_registration=# begin transaction;
+<pre class="highlight"><code>event_registration=# begin transaction;
 BEGIN
 event_registration=*# insert into person values (1, '2024-10-25', 'bob@mail.mcgill.ca', 'Bob', 'pass123');
 INSERT 0 1
@@ -2007,60 +1921,60 @@ DTOs are an entirely different concept from the DAOs (data access objects, a.k.a
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">ca.mcgill.ecse321.eventregistration.dto</span>;
+<pre class="highlight"><code class="language-java" data-lang="java">package ca.mcgill.ecse321.eventregistration.dto;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.time.LocalDate</span>;
+import java.time.LocalDate;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.model.Person</span>;
+import ca.mcgill.ecse321.eventregistration.model.Person;
 
-<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">PersonResponseDto</span> {
-    <span style="color:#088;font-weight:bold">private</span> <span style="color:#339;font-weight:bold">int</span> id;
-    <span style="color:#088;font-weight:bold">private</span> <span style="color:#0a8;font-weight:bold">String</span> name;
-    <span style="color:#088;font-weight:bold">private</span> <span style="color:#0a8;font-weight:bold">String</span> email;
-    <span style="color:#088;font-weight:bold">private</span> LocalDate creationDate;
+public class PersonResponseDto {
+    private int id;
+    private String name;
+    private String email;
+    private LocalDate creationDate;
 
-    <span style="color:#777">// Jackson needs a default constructor, but it doesn't need to be public</span>
-    <span style="color:#007">@SuppressWarnings</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">unused</span><span style="color:#710">&quot;</span></span>)
-    <span style="color:#088;font-weight:bold">private</span> PersonResponseDto() {
+    // Jackson needs a default constructor, but it doesn't need to be public
+    @SuppressWarnings("unused")
+    private PersonResponseDto() {
     }
 
-    <span style="color:#088;font-weight:bold">public</span> PersonResponseDto(Person model) {
-        <span style="color:#950">this</span>.id = model.getId();
-        <span style="color:#950">this</span>.name = model.getName();
-        <span style="color:#950">this</span>.email = model.getEmail();
-        <span style="color:#950">this</span>.creationDate = model.getCreationDate().toLocalDate();
+    public PersonResponseDto(Person model) {
+        this.id = model.getId();
+        this.name = model.getName();
+        this.email = model.getEmail();
+        this.creationDate = model.getCreationDate().toLocalDate();
     }
 
-    <span style="color:#088;font-weight:bold">public</span> LocalDate getCreationDate() {
-        <span style="color:#080;font-weight:bold">return</span> creationDate;
+    public LocalDate getCreationDate() {
+        return creationDate;
     }
 
-    <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getEmail() {
-        <span style="color:#080;font-weight:bold">return</span> email;
+    public String getEmail() {
+        return email;
     }
 
-    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">int</span> getId() {
-        <span style="color:#080;font-weight:bold">return</span> id;
+    public int getId() {
+        return id;
     }
 
-    <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getName() {
-        <span style="color:#080;font-weight:bold">return</span> name;
+    public String getName() {
+        return name;
     }
 
-    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> setCreationDate(LocalDate creationDate) {
-        <span style="color:#950">this</span>.creationDate = creationDate;
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
     }
 
-    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> setEmail(<span style="color:#0a8;font-weight:bold">String</span> email) {
-        <span style="color:#950">this</span>.email = email;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> setId(<span style="color:#339;font-weight:bold">int</span> id) {
-        <span style="color:#950">this</span>.id = id;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> setName(<span style="color:#0a8;font-weight:bold">String</span> name) {
-        <span style="color:#950">this</span>.name = name;
+    public void setName(String name) {
+        this.name = name;
     }
 }</code></pre>
 </div>
@@ -2074,56 +1988,56 @@ The DTO for requests (e.g., when creating a person for the first time) would be 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">ca.mcgill.ecse321.eventregistration.controller</span>;
+<pre class="highlight"><code class="language-java" data-lang="java">package ca.mcgill.ecse321.eventregistration.controller;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.beans.factory.annotation.Autowired</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.web.bind.annotation.GetMapping</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.web.bind.annotation.PathVariable</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.web.bind.annotation.PostMapping</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.web.bind.annotation.RequestBody</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.web.bind.annotation.RestController</span>;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.dto.PersonRequestDto</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.dto.PersonResponseDto</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.model.Person</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.service.PersonService</span>;
+import ca.mcgill.ecse321.eventregistration.dto.PersonRequestDto;
+import ca.mcgill.ecse321.eventregistration.dto.PersonResponseDto;
+import ca.mcgill.ecse321.eventregistration.model.Person;
+import ca.mcgill.ecse321.eventregistration.service.PersonService;
 
-<span style="color:#007">@RestController</span>
-<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">PersonController</span> {
-    <span style="color:#007">@Autowired</span>
-    <span style="color:#088;font-weight:bold">private</span> PersonService personService;
+@RestController
+public class PersonController {
+    @Autowired
+    private PersonService personService;
 
-    <span style="color:#777">/**
+    /**
      * Return the person with the given ID.
      *
      * @param pid The primary key of the person to find.
      * @return The person with the given ID.
-     */</span>
-    <span style="color:#007">@GetMapping</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">/people/{pid}</span><span style="color:#710">&quot;</span></span>)
-    <span style="color:#088;font-weight:bold">public</span> PersonResponseDto findPersonById(<span style="color:#007">@PathVariable</span> <span style="color:#339;font-weight:bold">int</span> pid) {
+     */
+    @GetMapping("/person/{pid}")
+    public PersonResponseDto findPersonById(@PathVariable int pid) {
         Person person = personService.findPersonById(pid);
-        <span style="color:#080;font-weight:bold">return</span> <span style="color:#080;font-weight:bold">new</span> PersonResponseDto(person);
+        return new PersonResponseDto(person);
     }
 
-    <span style="color:#777">/**
+    /**
      * Create a new person.
      *
      * @param person The person to create.
      * @return The created person, including their ID.
-     */</span>
-    <span style="color:#007">@PostMapping</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">/people</span><span style="color:#710">&quot;</span></span>)
-    <span style="color:#088;font-weight:bold">public</span> PersonResponseDto createPerson(<span style="color:#007">@RequestBody</span> PersonRequestDto person) {
+     */
+    @PostMapping("/person")
+    public PersonResponseDto createPerson(@RequestBody PersonRequestDto person) {
         Person createdPerson = personService.createPerson(person.getName(), person.getEmail(), person.getPassword());
-        <span style="color:#080;font-weight:bold">return</span> <span style="color:#080;font-weight:bold">new</span> PersonResponseDto(createdPerson);
+        return new PersonResponseDto(createdPerson);
     }
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The <code>@GetMapping</code> annotation indicates that <code>findPersonById</code> handles requests to the endpoint <code>GET /people/{pid}</code> (where <code>{pid}</code> should be replaced by an integer ID).
+<p>The <code>@GetMapping</code> annotation indicates that <code>findPersonById</code> handles requests to the endpoint <code>GET /person/{pid}</code> (where <code>{pid}</code> should be replaced by an integer ID).
 Spring Boot will extract the <code>pid</code> from the URL for us and pass the value to <code>findPersonById</code> via the <code>pid</code> parameter.
 <code>findPersonById</code> simply calls the service-layer method and then converts the response to a DTO.
-Similarly, the <code>@PostMapping</code> annotation indicates that <code>createPerson</code> handles requests to <code>POST /people</code>.
+Similarly, the <code>@PostMapping</code> annotation indicates that <code>createPerson</code> handles requests to <code>POST /person</code>.
 Since the <code>person</code> parameter is marked <code>@RequestBody</code>, Spring Boot will parse the <em>body</em> of the POST request to a <code>PersonRequestDto</code>.</p>
 </div>
 </div>
@@ -2135,11 +2049,11 @@ This can be done using command line tools like <code>curl</code> (which is avail
 </div>
 <div class="paragraph">
 <p>First, start the app using the command <code>./gradlew bootRun</code>.
-Using <code>curl</code>, we can then send a POST request to <code>/people</code> as follows, assuming our app is listening on port 8080.</p>
+Using <code>curl</code>, we can then send a POST request to <code>/person</code> as follows, assuming our app is listening on port 8080.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">curl --request POST 'http://localhost:8080/people' --data '{&quot;name&quot;: &quot;Alice&quot;, &quot;email&quot;: &quot;alice.allison@mail.mcgill.ca&quot;, &quot;password&quot;: &quot;password123&quot;}' --header 'Content-Type: application/json'</code></pre>
+<pre class="highlight"><code class="language-bash" data-lang="bash">curl --request POST 'http://localhost:8080/person' --data '{"name": "Alice", "email": "alice.allison@mail.mcgill.ca", "password": "password123"}' --header 'Content-Type: application/json'</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2147,7 +2061,7 @@ Using <code>curl</code>, we can then send a POST request to <code>/people</code>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code>{&quot;id&quot;:602,&quot;name&quot;:&quot;Alice&quot;,&quot;email&quot;:&quot;alice.allison@mail.mcgill.ca&quot;,&quot;creationDate&quot;:&quot;2024-10-21&quot;}</code></pre>
+<pre class="highlight"><code>{"id":602,"name":"Alice","email":"alice.allison@mail.mcgill.ca","creationDate":"2024-10-21"}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2158,7 +2072,7 @@ Using <code>curl</code>, we can then send a POST request to <code>/people</code>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">curl --request GET 'http://localhost:8080/people/602'</code></pre>
+<pre class="highlight"><code class="language-bash" data-lang="bash">curl --request GET 'http://localhost:8080/person/602'</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2180,72 +2094,72 @@ We use the Mockito library to define these mocks.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">ca.mcgill.ecse321.eventregistration.service</span>;
+<pre class="highlight"><code class="language-java" data-lang="java">package ca.mcgill.ecse321.eventregistration.service;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Assertions.assertEquals</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Assertions.assertNotNull</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Assertions.assertThrows</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.mockito.ArgumentMatchers.any</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.mockito.Mockito.times</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.mockito.Mockito.verify</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.mockito.Mockito.when</span>;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.sql.Date</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.time.LocalDate</span>;
+import java.sql.Date;
+import java.time.LocalDate;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Test</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.mockito.InjectMocks</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.mockito.Mock</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.boot.test.context.SpringBootTest</span>;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.exception.EventRegistrationException</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.model.Person</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.repository.PersonRepository</span>;
+import ca.mcgill.ecse321.eventregistration.exception.EventRegistrationException;
+import ca.mcgill.ecse321.eventregistration.model.Person;
+import ca.mcgill.ecse321.eventregistration.repository.PersonRepository;
 
-<span style="color:#007">@SpringBootTest</span>
-<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">PersonServiceTests</span> {
-    <span style="color:#007">@Mock</span>
-    <span style="color:#088;font-weight:bold">private</span> PersonRepository repo;
-    <span style="color:#007">@InjectMocks</span>
-    <span style="color:#088;font-weight:bold">private</span> PersonService service;
+@SpringBootTest
+public class PersonServiceTests {
+    @Mock
+    private PersonRepository repo;
+    @InjectMocks
+    private PersonService service;
 
-    <span style="color:#007">@SuppressWarnings</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">null</span><span style="color:#710">&quot;</span></span>)
-    <span style="color:#007">@Test</span>
-    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> testCreateValidPerson() {
-        <span style="color:#777">// Arrange</span>
-        <span style="color:#0a8;font-weight:bold">String</span> name = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Bob</span><span style="color:#710">&quot;</span></span>;
-        <span style="color:#0a8;font-weight:bold">String</span> email = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">bob@mail.mcgill.ca</span><span style="color:#710">&quot;</span></span>;
-        <span style="color:#0a8;font-weight:bold">String</span> password = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">12345678</span><span style="color:#710">&quot;</span></span>;
-        Person bob = <span style="color:#080;font-weight:bold">new</span> Person(name, email, password, <span style="color:#0a8;font-weight:bold">Date</span>.valueOf(LocalDate.now()));
+    @SuppressWarnings("null")
+    @Test
+    public void testCreateValidPerson() {
+        // Arrange
+        String name = "Bob";
+        String email = "bob@mail.mcgill.ca";
+        String password = "12345678";
+        Person bob = new Person(name, email, password, Date.valueOf(LocalDate.now()));
         when(repo.save(any(Person.class))).thenReturn(bob);
-        <span style="color:#777">// You could also do it with thenAnswer(), which is more flexible but more</span>
-        <span style="color:#777">// verbose</span>
-        <span style="color:#777">// when(repo.save(notNull(Person.class))).thenAnswer((InvocationOnMock iom) -&gt;</span>
-        <span style="color:#777">// iom.getArgument(0));</span>
+        // You could also do it with thenAnswer(), which is more flexible but more
+        // verbose
+        // when(repo.save(notNull(Person.class))).thenAnswer((InvocationOnMock iom) -&gt;
+        // iom.getArgument(0));
 
-        <span style="color:#777">// Act</span>
+        // Act
         Person createdPerson = service.createPerson(name, email, password);
 
-        <span style="color:#777">// Assert</span>
+        // Assert
         assertNotNull(createdPerson);
         assertEquals(name, createdPerson.getName());
         assertEquals(email, createdPerson.getEmail());
         assertEquals(password, createdPerson.getPassword());
-        assertEquals(<span style="color:#0a8;font-weight:bold">Date</span>.valueOf(LocalDate.now()), createdPerson.getCreationDate());
-        verify(repo, times(<span style="color:#00D">1</span>)).save(bob);
+        assertEquals(Date.valueOf(LocalDate.now()), createdPerson.getCreationDate());
+        verify(repo, times(1)).save(bob);
     }
 
-    <span style="color:#007">@Test</span>
-    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> testReadPersonByValidId() {
-        <span style="color:#777">// Arrange</span>
-        <span style="color:#339;font-weight:bold">int</span> id = <span style="color:#00D">42</span>;
-        Person charlie = <span style="color:#080;font-weight:bold">new</span> Person(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Charlie</span><span style="color:#710">&quot;</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">charlie@mail.mcgill.ca</span><span style="color:#710">&quot;</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">password123</span><span style="color:#710">&quot;</span></span>, <span style="color:#0a8;font-weight:bold">Date</span>.valueOf(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2024-03-01</span><span style="color:#710">&quot;</span></span>));
+    @Test
+    public void testReadPersonByValidId() {
+        // Arrange
+        int id = 42;
+        Person charlie = new Person("Charlie", "charlie@mail.mcgill.ca", "password123", Date.valueOf("2024-03-01"));
         when(repo.findPersonById(id)).thenReturn(charlie);
 
-        <span style="color:#777">// Act</span>
+        // Act
         Person person = service.findPersonById(id);
 
-        <span style="color:#777">// Assert</span>
+        // Assert
         assertNotNull(person);
         assertEquals(charlie.getName(), person.getName());
         assertEquals(charlie.getEmail(), person.getEmail());
@@ -2253,24 +2167,24 @@ We use the Mockito library to define these mocks.</p>
         assertEquals(charlie.getCreationDate(), person.getCreationDate());
     }
 
-    <span style="color:#007">@Test</span>
-    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> testReadPersonByInvalidId() {
-        <span style="color:#777">// Set up</span>
-        <span style="color:#339;font-weight:bold">int</span> id = <span style="color:#00D">42</span>;
-        <span style="color:#777">// Default is to return null, so you could omit this</span>
-        when(repo.findPersonById(id)).thenReturn(<span style="color:#069">null</span>);
+    @Test
+    public void testReadPersonByInvalidId() {
+        // Set up
+        int id = 42;
+        // Default is to return null, so you could omit this
+        when(repo.findPersonById(id)).thenReturn(null);
 
-        <span style="color:#777">// Act</span>
-        <span style="color:#777">// Assert</span>
+        // Act
+        // Assert
         EventRegistrationException e = assertThrows(EventRegistrationException.class, () -&gt; service.findPersonById(id));
-        assertEquals(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">There is no person with ID </span><span style="color:#710">&quot;</span></span> + id + <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">.</span><span style="color:#710">&quot;</span></span>, e.getMessage());
-        <span style="color:#777">// assertThrows is basically like the following:</span>
-        <span style="color:#777">// try {</span>
-        <span style="color:#777">// service.findPersonById(id);</span>
-        <span style="color:#777">// fail(&quot;No exception was thrown.&quot;);</span>
-        <span style="color:#777">// } catch (IllegalArgumentException e) {</span>
-        <span style="color:#777">// assertEquals(&quot;There is no person with ID &quot; + id + &quot;.&quot;, e.getMessage());</span>
-        <span style="color:#777">// }</span>
+        assertEquals("There is no person with ID " + id + ".", e.getMessage());
+        // assertThrows is basically like the following:
+        // try {
+        // service.findPersonById(id);
+        // fail("No exception was thrown.");
+        // } catch (IllegalArgumentException e) {
+        // assertEquals("There is no person with ID " + id + ".", e.getMessage());
+        // }
     }
 }</code></pre>
 </div>
@@ -2336,55 +2250,55 @@ It&#8217;s also nice to be able to see the code coverage for your integration te
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">ca.mcgill.ecse321.eventregistration.integration</span>;
+<pre class="highlight"><code class="language-java" data-lang="java">package ca.mcgill.ecse321.eventregistration.integration;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Assertions.assertEquals</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Assertions.assertNotNull</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">static</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Assertions.assertTrue</span>;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.time.LocalDate</span>;
+import java.time.LocalDate;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.MethodOrderer</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Order</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.Test</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.TestInstance</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.TestInstance.Lifecycle</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.junit.jupiter.api.TestMethodOrder</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.beans.factory.annotation.Autowired</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.boot.test.context.SpringBootTest</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.boot.test.context.SpringBootTest.WebEnvironment</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.boot.test.web.client.TestRestTemplate</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.http.HttpStatus</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">org.springframework.http.ResponseEntity</span>;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.dto.ErrorDto</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.dto.PersonRequestDto</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">ca.mcgill.ecse321.eventregistration.dto.PersonResponseDto</span>;
+import ca.mcgill.ecse321.eventregistration.dto.ErrorDto;
+import ca.mcgill.ecse321.eventregistration.dto.PersonRequestDto;
+import ca.mcgill.ecse321.eventregistration.dto.PersonResponseDto;
 
-<span style="color:#007">@SpringBootTest</span>(webEnvironment = WebEnvironment.RANDOM_PORT)
-<span style="color:#007">@TestMethodOrder</span>(MethodOrderer.OrderAnnotation.class)
-<span style="color:#007">@TestInstance</span>(Lifecycle.PER_CLASS)
-<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">PersonIntegrationTests</span> {
-    <span style="color:#007">@Autowired</span>
-    <span style="color:#088;font-weight:bold">private</span> TestRestTemplate client;
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(Lifecycle.PER_CLASS)
+public class PersonIntegrationTests {
+    @Autowired
+    private TestRestTemplate client;
 
-    <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> VALID_NAME = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Alice</span><span style="color:#710">&quot;</span></span>;
-    <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> VALID_EMAIL = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">alice@mail.mcgill.ca</span><span style="color:#710">&quot;</span></span>;
-    <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> VALID_PASSWORD = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">password123</span><span style="color:#710">&quot;</span></span>;
-    <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> INVALID_PASSWORD = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">123</span><span style="color:#710">&quot;</span></span>;
-    <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">int</span> INVALID_ID = <span style="color:#00D">0</span>;
-    <span style="color:#088;font-weight:bold">private</span> <span style="color:#339;font-weight:bold">int</span> validId;
+    private final String VALID_NAME = "Alice";
+    private final String VALID_EMAIL = "alice@mail.mcgill.ca";
+    private final String VALID_PASSWORD = "password123";
+    private final String INVALID_PASSWORD = "123";
+    private final int INVALID_ID = 0;
+    private int validId;
 
-    <span style="color:#007">@Test</span>
-    <span style="color:#007">@Order</span>(<span style="color:#00D">1</span>)
-    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> testCreateValidPerson() {
-        <span style="color:#777">// Arrange</span>
-        PersonRequestDto request = <span style="color:#080;font-weight:bold">new</span> PersonRequestDto(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
+    @Test
+    @Order(1)
+    public void testCreateValidPerson() {
+        // Arrange
+        PersonRequestDto request = new PersonRequestDto(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
 
-        <span style="color:#777">// Act</span>
-        ResponseEntity&lt;PersonResponseDto&gt; response = client.postForEntity(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">/people</span><span style="color:#710">&quot;</span></span>, request, PersonResponseDto.class);
+        // Act
+        ResponseEntity&lt;PersonResponseDto&gt; response = client.postForEntity("/person", request, PersonResponseDto.class);
 
-        <span style="color:#777">// Assert</span>
+        // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         PersonResponseDto createdPerson = response.getBody();
@@ -2392,29 +2306,29 @@ It&#8217;s also nice to be able to see the code coverage for your integration te
         assertEquals(VALID_NAME, createdPerson.getName());
         assertEquals(VALID_EMAIL, createdPerson.getEmail());
         assertNotNull(createdPerson.getId());
-        assertTrue(createdPerson.getId() &gt; <span style="color:#00D">0</span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Response should have a positive ID.</span><span style="color:#710">&quot;</span></span>);
+        assertTrue(createdPerson.getId() &gt; 0, "Response should have a positive ID.");
         assertEquals(LocalDate.now(), createdPerson.getCreationDate());
 
-        <span style="color:#950">this</span>.validId = createdPerson.getId();
+        this.validId = createdPerson.getId();
     }
 
-    <span style="color:#007">@Test</span>
-    <span style="color:#007">@Order</span>(<span style="color:#00D">2</span>)
-    <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> testReadPersonByValidId() {
-        <span style="color:#777">// Arrange</span>
-        <span style="color:#0a8;font-weight:bold">String</span> url = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">/people/</span><span style="color:#710">&quot;</span></span> + <span style="color:#950">this</span>.validId;
+    @Test
+    @Order(2)
+    public void testReadPersonByValidId() {
+        // Arrange
+        String url = "/person/" + this.validId;
 
-        <span style="color:#777">// Act</span>
+        // Act
         ResponseEntity&lt;PersonResponseDto&gt; response = client.getForEntity(url, PersonResponseDto.class);
 
-        <span style="color:#777">// Assert</span>
+        // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         PersonResponseDto person = response.getBody();
         assertNotNull(person);
         assertEquals(VALID_NAME, person.getName());
         assertEquals(VALID_EMAIL, person.getEmail());
-        assertEquals(<span style="color:#950">this</span>.validId, person.getId());
+        assertEquals(this.validId, person.getId());
         assertEquals(LocalDate.now(), person.getCreationDate());
     }
 }</code></pre>
@@ -2445,22 +2359,22 @@ If the order-dependence makes you uncomfortable, you can merge tests that depend
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="gradle">plugins {
-        id 'org.springframework.boot' version '2.2.4.RELEASE'
-        id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-        id 'java'
-        id 'jacoco'
+<pre class="highlight"><code class="language-gradle" data-lang="gradle">plugins {
+	id 'org.springframework.boot' version '2.2.4.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+	id 'jacoco'
 }
 
 //...other configurations
 
 tasks.named('test') {
-        useJUnitPlatform()
-        testLogging {
-                exceptionFormat &quot;full&quot;
-                events &quot;passed&quot;, &quot;failed&quot;
-         }
-        finalizedBy jacocoTestReport
+	useJUnitPlatform()
+	testLogging {
+		exceptionFormat "full"
+		events "passed", "failed"
+ 	}
+	finalizedBy jacocoTestReport
 }
 
 tasks.named('jacocoTestReport') {
@@ -2480,20 +2394,20 @@ tasks.named('jacocoTestReport') {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="gradle">tasks.named('test') {
-        //...other configurations
-        finalizedBy jacocoTestCoverageVerification
+<pre class="highlight"><code class="language-gradle" data-lang="gradle">tasks.named('test') {
+	//...other configurations
+	finalizedBy jacocoTestCoverageVerification
 }
 
 tasks.named('jacocoTestCoverageVerification') {
-        violationRules {
-                rule {
-                        limit {
-                                minimum = 0.6
-                        }
-                }
-        }
-        dependsOn test // tests are required to run before checking code coverage.
+	violationRules {
+		rule {
+			limit {
+				minimum = 0.6
+			}
+		}
+	}
+	dependsOn test // tests are required to run before checking code coverage.
 }</code></pre>
 </div>
 </div>
@@ -2549,140 +2463,660 @@ Note that:</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_frontend">4. Frontend</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_installation_instructions_vue_js">4.1. Installation Instructions: Vue.js</h3>
+<div class="paragraph">
+<p><a href="https://vuejs.org/v2/guide/">Vue.js</a> is a popular web frontend for building user interfaces in Javascript, which is considered to be easier to learn compared to <a href="https://reactjs.org/">React</a> and <a href="https://angular.io/">Angular</a>.</p>
+</div>
+<div class="paragraph">
+<p>Before installing Vue.js, you will need to install <a href="https://nodejs.org/en/download">node.js</a> and npm (this comes with Node by default).</p>
+</div>
+<div class="sect3">
+<h4 id="_install_vue_js">4.1.1. Install Vue.js</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open a shell or terminal.</p>
+</li>
+<li>
+<p>Check that you successfully installed <strong>node.js</strong> and <strong>npm</strong> e.g. by checking their versions:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ node -v
+v22.11.0
+$ npm -v
+v10.9.0</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Navigate to your local Git repository of the Event Registration System</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ cd ~/git/eventregistration</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Generate initial content using the command <code>npm create vue@latest</code> (see <a href="https://github.com/vuejs/create-vue" class="bare">https://github.com/vuejs/create-vue</a>). For the tutorial code, we use the setup below.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>$ npm create vue@latest
+
+&gt; npx
+&gt; create-vue
+
+
+Vue.js - The Progressive JavaScript Framework
+
+✔ Project name: … EventRegistration-Frontend
+✔ Package name: … eventregistration-frontend
+✔ Add TypeScript? … No
+✔ Add JSX Support? … No
+✔ Add Vue Router for Single Page Application development? … Yes
+✔ Add Pinia for state management? … No
+✔ Add Vitest for Unit Testing? … No
+✔ Add an End-to-End Testing Solution? › No
+✔ Add ESLint for code quality? › No
+
+Scaffolding project in /home/louis-ta/dev/eventregistration/EventRegistration-Frontend...
+
+Done. Now run:
+
+  cd EventRegistration-Frontend
+  npm install
+  npm run dev</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Now execute those commands one after the other to move into the <code>EventRegistration-Frontend diectory</code>, install the dependencies, and start the frontend server.</p>
+</li>
+<li>
+<p>The command <code>npm run dev</code> should output the URL of the development server (e.g., <a href="http://localhost:5173/" class="bare">http://localhost:5173/</a>).</p>
+</li>
+<li>
+<p>You can stop this development server by pressing <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>C</kbd></span> in the shell</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_setting_up_your_development_server">4.1.2. Setting up your development server</h4>
+<div class="paragraph">
+<p>If you want to change the port for the frontend server (e.g., in case another app is already using it), you can do so in <code>vite.config.js</code>.
+Set <code>server.port</code> to be the new port number.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">export default defineConfig({
+  plugins: [
+    vue(),
+    vueDevTools(),
+  ],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    },
+  },
+  // Added
+  server: {
+    port: 8087
+  }
+})</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you start your development server again using <code>npm run dev</code>, the same web application should now appear at <a href="http://localhost:8087/" class="bare">http://localhost:8087/</a>
+Stop the development server by pressing <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>C</kbd></span>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_commit_your_work_to_github">4.1.3. Commit your work to Github</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>If everything works then commit your work to your Github repository.</p>
+</li>
+<li>
+<p>Notice that many libraries and files are omitted, which is intentional. Check the <code>.gitignore</code> file for details.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_create_a_static_vue_js_component">4.2. Create a Static Vue.js Component</h3>
+<div class="paragraph">
+<p>Vue.js promotes the use of <a href="https://vuejs.org/guide/essentials/component-basics.html">components</a> which encapsulate GUI elements and their behavior in order to build up rich user interfaces in a modular way.
+A component consists of</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>template</strong>: A template of (a part of) an HTML document enriched with data bindings, conditional expressions, loops, etc.</p>
+</li>
+<li>
+<p><strong>script</strong>: The behavior of the user interface programmed in JavaScript.</p>
+</li>
+<li>
+<p><strong>style</strong>: The customized graphical appearance of HTML document elements.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>We will first create a new Vue.js component and then connect it to a backend Java Spring service via HTTP requests.</p>
+</div>
+<div class="sect3">
+<h4 id="_create_a_component_file">4.2.1. Create a component file</h4>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+We use <code>.</code> below to refer to the <code>EventRegistration-Frontend</code> directory.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Create a new file <code>EventsView.vue</code> in <code>./src/views</code> with the following initial content:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-html" data-lang="html">&lt;template&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+&lt;/script&gt;
+
+&lt;style&gt;
+&lt;/style&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create some static HTML content of the template part starting with a <code>&lt;main&gt;</code> element corresponding to your component.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;template&gt;
+    &lt;main&gt;
+        &lt;h1&gt;Event Registration&lt;/h1&gt;
+        &lt;h2&gt;New Event&lt;/h2&gt;
+        &lt;div&gt;
+            &lt;select&gt;
+                &lt;option value="IN_PERSON"&gt;In person&lt;/option&gt;
+                &lt;option value="ONLINE"&gt;Online&lt;/option&gt;
+            &lt;/select&gt;
+            &lt;input type="text" placeholder="Name" /&gt;
+            &lt;input type="date" placeholder="Date" /&gt;
+            &lt;input type="time" placeholder="Start Time" /&gt;
+            &lt;input type="time" placeholder="End Time" /&gt;
+            &lt;input type="text" placeholder="Registration Limit" /&gt;
+            &lt;input type="text" placeholder="Location" /&gt;
+            &lt;button&gt;Create Event&lt;/button&gt;
+            &lt;button class="danger-btn"&gt;Clear&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;h2&gt;Events&lt;/h2&gt;
+        &lt;table&gt;
+            &lt;tbody&gt;
+                &lt;tr&gt;
+                    &lt;th&gt;Name&lt;/th&gt;
+                    &lt;th&gt;Date&lt;/th&gt;
+                    &lt;th&gt;Type&lt;/th&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt;My In-Person Event&lt;/td&gt;
+                    &lt;td&gt;2024-11-15&lt;/td&gt;
+                    &lt;td&gt;In person&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt;My Online Event&lt;/td&gt;
+                    &lt;td&gt;2024-11-15&lt;/td&gt;
+                    &lt;td&gt;Online&lt;/td&gt;
+                &lt;/tr&gt;
+            &lt;/tbody&gt;
+        &lt;/table&gt;
+    &lt;/main&gt;
+&lt;/template&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Customize the <code>&lt;style&gt;</code> part with your designated CSS content.
+A detailed CSS reference documentation is available at <a href="https://developer.mozilla.org/en-US/docs/Web/CSS" class="bare">https://developer.mozilla.org/en-US/docs/Web/CSS</a>.
+For example, we can use the following styles to</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Make the table fill the entire width of the page.</p>
+</li>
+<li>
+<p>Underline the sub-headings and add some padding above them.</p>
+</li>
+<li>
+<p>Tweak the style of the table (get rid of the spacing between cells, add padding within cells, and make the border white).</p>
+</li>
+<li>
+<p>Make the "Clear" button red.</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-HTML" data-lang="HTML">&lt;style&gt;
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+h2 {
+    padding-top: 1em;
+    text-decoration: underline;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td, th {
+	border: 1px solid var(--color-border);
+	padding: 0.25em;
+}
+
+.danger-btn {
+    border: 1px solid red;
+    color: red;
+}
+&lt;/style&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_create_a_new_routing_command">4.2.2. Create a new routing command</h4>
+<div class="paragraph">
+<p>By default, going to <a href="http://localhost:8087/" class="bare">http://localhost:8087/</a> brings us to the initial "Home" view, not our events view.
+We change this in <code>./src/router/index.js</code>.
+Move the existing <code>HomeView</code> entry to a different URL (e.g., <code>/hello</code>) and create a new entry for the events view.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">import EventsView from '@/views/EventsView.vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/',
+      name: 'events',
+      component: EventsView,
+    },
+    {
+      path: '/hello',
+      name: 'home',
+      component: HomeView
+    },
+    // etc.
+  ],
+})
+
+export default router</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you go to <code><a href="http://localhost:8087" class="bare">http://localhost:8087</a></code> now, you should see the events view.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_vue_js_components_with_dynamic_content">4.3. Vue.js Components with Dynamic Content</h3>
+<div class="paragraph">
+<p>Next we add event handling and dynamic content to our events view.</p>
+</div>
+<div class="paragraph">
+<p>First, let&#8217;s make the event list dynamic instead of hard-coding it in the HTML.
+Add the following code in the <code>&lt;script&gt;</code> block&#8230;&#8203;</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">&lt;script&gt;
+export default {
+  name: "events",
+  data() {
+    return {
+      events: [
+        { type: "IN_PERSON", name: "My in-person event", date: "2024-11-15", startTime: "13:35:00", endTime: "15:25:00", registrationLimit: 1, location: "McGill" },
+        { type: "ONLINE", name: "My online event", date: "2024-11-16", startTime: "12:00:00", endTime: "13:00:00", registrationLimit: 100, location: "Zoom" },
+      ],
+    };
+  }
+}
+&lt;/script&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>&#8230;&#8203;and replace the hard-coded <code>&lt;table&gt;</code> element with the following table:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-html" data-lang="html">&lt;table&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Name&lt;/th&gt;
+      &lt;th&gt;Date&lt;/th&gt;
+      &lt;th&gt;Type&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr v-for="e in events"&gt;
+      &lt;td&gt;{{ e.name }}&lt;/td&gt;
+      &lt;td&gt;{{ e.date }}&lt;/td&gt;
+      &lt;td&gt;{{ e.type === "IN_PERSON" ? "In person" : "Online" }}&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Vue.js will automatically inject a new <code>&lt;tr&gt;</code> element for each entry in the <code>events</code> array (defined above in the <code>&lt;script&gt;</code> block).
+The "mustache variables" (e.g., <code>{{ e.name }}</code>) will be replaced with the value for the event <code>e</code> in the current row.</p>
+</div>
+<div class="paragraph">
+<p>To implement event creation, we define variables to hold the values entered by the user&#8230;&#8203;</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">export default {
+  // ...
+  data() {
+    return {
+      events: /* ... */,
+      newEventType: "IN_PERSON",
+      newEventName: null,
+      newEventDate: null,
+      newEventStartTime: null,
+      newEventEndTime: null,
+      newEventRegLimit: null,
+      newEventLocation: null
+    };
+  },
+  // ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>&#8230;&#8203;we define methods <code>createEvent()</code> and <code>clearInputs()</code>&#8230;&#8203;</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">export default {
+  // ...
+  methods: {
+    createEvent() {
+      const newEvent = {
+        type: this.newEventType,
+        name: this.newEventName,
+        date: this.newEventDate,
+        startTime: this.newEventStartTime,
+        endTime: this.newEventEndTime,
+        registrationLimit: this.newEventRegLimit,
+        location: this.newEventLocation
+      };
+      this.events.push(newEvent);
+    },
+    clearInputs() {
+      this.newEventType = "IN_PERSON";
+      this.newEventName = null;
+      this.newEventDate = null;
+      this.newEventStartTime = null;
+      this.newEventEndTime = null;
+      this.newEventRegLimit = null;
+      this.newEventLocation = null;
+    },
+    isEventValid() {
+      return this.newEventName
+        &amp;&amp; this.newEventDate
+        &amp;&amp; this.newEventStartTime
+        &amp;&amp; this.newEventRegLimit
+        &amp;&amp; this.newEventLocation;
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>&#8230;&#8203;and we bind these new variables and methods to the input elements using <code>v-bind</code> and <code>@click</code>, respectively.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-html" data-lang="html">&lt;div&gt;
+  &lt;select v-model="newEventType"&gt;
+    &lt;option value="IN_PERSON"&gt;In person&lt;/option&gt;
+    &lt;option value="ONLINE"&gt;Online&lt;/option&gt;
+  &lt;/select&gt;
+  &lt;input type="text" placeholder="Name" v-model="newEventName" /&gt;
+  &lt;input type="date" placeholder="Date" v-model="newEventDate" /&gt;
+  &lt;input type="time" placeholder="Start Time" v-model="newEventStartTime" /&gt;
+  &lt;input type="time" placeholder="End Time" v-model="newEventEndTime" /&gt;
+  &lt;input type="text" placeholder="Registration Limit" v-model="newEventRegLimit" /&gt;
+  &lt;input type="text" placeholder="Location" v-model="newEventLocation" /&gt;
+  &lt;button id="create-btn" @click="createEvent" v-bind:disabled="!isEventValid()"&gt;Create Event&lt;/button&gt;
+  &lt;button class="danger-btn" @click="clearInputs"&gt;Clear&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Whenever the button is clicked, the method specified by the <code>@click</code> attribute (in this case, <code>createEvent</code> or <code>clearInputs</code>) will be called.
+<code>createEvent</code> accesses the values entered by the user via <code>this.newEventName</code>, <code>this.newEventDate</code>, etc.
+It then adds a new event to the array, which will result in the DOM being updated.
+To clear the inputs, <code>clearInputs</code> simply updates the variables <code>this.newEventName</code>, <code>this.newEventDate</code>, etc.</p>
+</div>
+<div class="paragraph">
+<p>Notice that we also disable the button in case the user has not entered all the required information yet.
+We take advantage of the fact that empty strings, <code>null</code>, and <code>undefined</code> are all "falsy" values; that is, <code>isEventValid</code> will return <code>false</code> if any of the values are empty, <code>null</code>, or <code>undefined</code>.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+The <code>v-model</code> attribute implements <strong>two-way data binding</strong>.
+If our JavaScript code updates one of the variables, the HTML will be updated accordingly.
+Conversely, if the users types something, the value of the corresponding variable will be updated.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_calling_backend_services">4.4. Calling Backend Services</h3>
+<div class="paragraph">
+<p>Next we change our frontend to issue calls to the backend via the Rest API provided by the Java Spring framework.</p>
+</div>
+<div class="sect3">
+<h4 id="_install_additional_dependencies">4.4.1. Install additional dependencies</h4>
+<div class="paragraph">
+<p>Add Axios as a dependency.
+We will use Axios for issuing REST API calls.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">npm install axios@1.5</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_calling_backend_services_in_from_vue_js_components">4.4.2. Calling backend services in from Vue.js components</h4>
+<div class="paragraph">
+<p>In the <code>&lt;script&gt;</code> block of <code>EventsView.vue</code>, create a new Axios client:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">&lt;script&gt;
+import axios from "axios";
+
+const axiosClient = axios.create({
+	// NOTE: it's baseURL, not baseUrl
+	baseURL: "http://localhost:8080"
+});
+
+export default {
+  // ...
+}
+&lt;/script&gt;</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+For simplicity we hard-code the backend URL here, but generally you&#8217;d put it in a config file instead.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To get the list of events when the page loads, we can send an HTTP request in the <code>created()</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">&lt;script&gt;
+// ...
+
+export default {
+  // ...
+  async created() {
+    try {
+      const response = await axiosClient.get("/events");
+    } catch (e) {
+      // TODO: Show a message to the user or something
+      console.error(e);
+    }
+  }
+  // ...
+};
+&lt;/script&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We mark the <code>created</code> method <code>async</code> and use <code>await</code> when sending the request so that we can use try/catch for exception handling.
+See <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function" class="bare">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function</a>.</p>
+</div>
+<div class="paragraph">
+<p>To send newly-created events to the backend, we update the <code>createEvent</code> method as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">&lt;script&gt;
+// ...
+
+export default {
+  // ...
+  methods: {
+    async createEvent() {
+      const newEvent = {
+        type: this.newEventType,
+        name: this.newEventName,
+        date: this.newEventDate,
+        startTime: this.newEventStartTime,
+        endTime: this.newEventEndTime,
+        registrationLimit: this.newEventRegLimit,
+        location: this.newEventLocation
+      };
+      try {
+        const response = await axiosClient.post("/events", newEvent);
+      } catch (e) {
+        // TODO: show a message to the user or something
+        console.error(e);
+      }
+      this.events.push(response.data);
+      this.clearInputs();
+    },
+    // ...
+  }
+};
+&lt;/script&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you run the frontend, you should see that you can now create an event and it&#8217;ll appear in the events list.
+Furthermore, the event will remain in the list if you refresh the page.</p>
+</div>
+<div class="paragraph">
+<p>Note that, at first, you will likely run into CORS (<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing</a>) errors.
+You must add the <code>@CrossOrigin</code> annotation to your controller classes to allow requests from your frontend.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+You can also use wildcards in the <code>@CrossOrigin</code> annotation, as in <code>@CrossOrigin(origin = "*")</code>.
+This allows cross-origin requests from *any* domain, which is less secure but possibly more convenient.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">package ca.mcgill.ecse321.eventregistration.controller;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@CrossOrigin(origins = "http://localhost:8087")
+public class EventController {
+  // ...
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_further_documentation">4.5. Further documentation</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>MDN web docs for general HTML, CSS, and JavaScript questions: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" class="bare">https://developer.mozilla.org/en-US/docs/Web/JavaScript</a></p>
+</li>
+<li>
+<p>Vue.js guide: <a href="https://vuejs.org/guide/introduction.html" class="bare">https://vuejs.org/guide/introduction.html</a></p>
+</li>
+<li>
+<p>Vue router guide: <a href="https://router.vuejs.org/guide/" class="bare">https://router.vuejs.org/guide/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_working_example">5. Working Example</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A working version of the app is available at <a href="https://github.com/McGill-ECSE321-Fall2025/event-registration" class="bare">https://github.com/McGill-ECSE321-Fall2025/event-registration</a>.</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-09-24 23:53:31 -0400
+Last updated 2025-11-04 10:37:54 -0500
 </div>
 </div>
-<script>
-;(function () { /*! Asciidoctor Tabs | Copyright (c) 2018-present Dan Allen | MIT License */
-  'use strict'
-
-  var config = (document.currentScript || {}).dataset || {}
-  var forEach = Array.prototype.forEach
-
-  init(document.querySelectorAll('.tabs'))
-
-  function init (tabsBlocks) {
-    if (!tabsBlocks.length) return
-    forEach.call(tabsBlocks, function (tabs) {
-      var syncIds = tabs.classList.contains('is-sync') ? {} : undefined
-      var tablist = tabs.querySelector('.tablist ul')
-      tablist.setAttribute('role', 'tablist')
-      var start
-      forEach.call(tablist.querySelectorAll('li'), function (tab, idx) {
-        tab.tabIndex = -1
-        tab.setAttribute('role', tab.classList.add('tab') || 'tab')
-        var id, anchor, syncId
-        if (!(id = tab.id) && (anchor = tab.querySelector('a[id]'))) {
-          id = tab.id = anchor.parentNode.removeChild(anchor).id
-        }
-        var panel = id && tabs.querySelector('.tabpanel[aria-labelledby~="' + id + '"]')
-        if (!panel) return idx ? undefined : toggleSelected(tab, true) // invalid state
-        syncIds && (((syncId = tab.textContent.trim()) in syncIds) ? (syncId = undefined) : true) &&
-        (syncIds[(tab.dataset.syncId = syncId)] = tab)
-        idx || (syncIds && (start = { tab: tab, panel: panel })) ? toggleHidden(panel, true) : toggleSelected(tab, true)
-        tab.setAttribute('aria-controls', panel.id)
-        panel.setAttribute('role', 'tabpanel')
-        var onClick = syncId === undefined ? activateTab : activateTabSync
-        tab.addEventListener('click', onClick.bind({ tabs: tabs, tab: tab, panel: panel }))
-      })
-      if (!tabs.closest('.tabpanel')) {
-        forEach.call(tabs.querySelectorAll('.tabpanel table.tableblock'), function (table) {
-          var container = Object.assign(document.createElement('div'), { className: 'tablecontainer' })
-          table.parentNode.insertBefore(container, table).appendChild(table)
-        })
-      }
-      if (start) {
-        var syncGroupId
-        for (var i = 0, lst = tabs.classList, len = lst.length, className; i !== len; i++) {
-          if (!(className = lst.item(i)).startsWith('data-sync-group-id=')) continue
-          tabs.dataset.syncGroupId = syncGroupId = lst.remove(className) || className.slice(19).replace(/\u00a0/g, ' ')
-          break
-        }
-        if (syncGroupId === undefined) tabs.dataset.syncGroupId = syncGroupId = Object.keys(syncIds).sort().join('|')
-        var preferredSyncId = 'syncStorageKey' in config &&
-          window[(config.syncStorageScope || 'local') + 'Storage'].getItem(config.syncStorageKey + '-' + syncGroupId)
-        var tab = preferredSyncId && syncIds[preferredSyncId]
-        tab && Object.assign(start, { tab: tab, panel: document.getElementById(tab.getAttribute('aria-controls')) })
-        toggleSelected(start.tab, true) || toggleHidden(start.panel, false)
-      }
-    })
-    onHashChange()
-    toggleClassOnEach(tabsBlocks, 'is-loading', 'remove')
-    window.setTimeout(toggleClassOnEach.bind(null, tabsBlocks, 'is-loaded', 'add'), 0)
-    window.addEventListener('hashchange', onHashChange)
-  }
-
-  function activateTab (e) {
-    var tab = this.tab
-    var tabs = this.tabs || (this.tabs = tab.closest('.tabs'))
-    var panel = this.panel || (this.panel = document.getElementById(tab.getAttribute('aria-controls')))
-    querySelectorWithSiblings(tabs, '.tablist .tab', 'tab').forEach(function (el) {
-      toggleSelected(el, el === tab)
-    })
-    querySelectorWithSiblings(tabs, '.tabpanel', 'tabpanel').forEach(function (el) {
-      toggleHidden(el, el !== panel)
-    })
-    if (!this.isSync && 'syncStorageKey' in config && 'syncGroupId' in tabs.dataset) {
-      var storageKey = config.syncStorageKey + '-' + tabs.dataset.syncGroupId
-      window[(config.syncStorageScope || 'local') + 'Storage'].setItem(storageKey, tab.dataset.syncId)
-    }
-    if (!e) return
-    var loc = window.location
-    var hashIdx = loc.hash ? loc.href.indexOf('#') : -1
-    if (~hashIdx) window.history.replaceState(null, '', loc.href.slice(0, hashIdx))
-    e.preventDefault()
-  }
-
-  function activateTabSync (e) {
-    activateTab.call(this, e)
-    var thisTabs = this.tabs
-    var thisTab = this.tab
-    var initialY = thisTabs.getBoundingClientRect().y
-    forEach.call(document.querySelectorAll('.tabs'), function (tabs) {
-      if (tabs === thisTabs || tabs.dataset.syncGroupId !== thisTabs.dataset.syncGroupId) return
-      querySelectorWithSiblings(tabs, '.tablist .tab', 'tab').forEach(function (tab) {
-        if (tab.dataset.syncId === thisTab.dataset.syncId) activateTab.call({ tabs: tabs, tab: tab, isSync: true })
-      })
-    })
-    var shiftedBy = thisTabs.getBoundingClientRect().y - initialY
-    if (shiftedBy && (shiftedBy = Math.round(shiftedBy))) window.scrollBy({ top: shiftedBy, behavior: 'instant' })
-  }
-
-  function querySelectorWithSiblings (scope, selector, siblingClass) {
-    var el = scope.querySelector(selector)
-    if (!el) return []
-    var result = [el]
-    while ((el = el.nextElementSibling) && el.classList.contains(siblingClass)) result.push(el)
-    return result
-  }
-
-  function toggleClassOnEach (elements, className, method) {
-    forEach.call(elements, function (el) {
-      el.classList[method](className)
-    })
-  }
-
-  function toggleHidden (el, state) {
-    el.classList[(el.hidden = state) ? 'add' : 'remove']('is-hidden')
-  }
-
-  function toggleSelected (el, state) {
-    el.setAttribute('aria-selected', '' + state)
-    el.classList[state ? 'add' : 'remove']('is-selected')
-    el.tabIndex = state ? 0 : -1
-  }
-
-  function onHashChange () {
-    var id = window.location.hash.slice(1)
-    if (!id) return
-    var tab = document.getElementById(~id.indexOf('%') ? decodeURIComponent(id) : id)
-    if (!(tab && tab.classList.contains('tab'))) return
-    'syncId' in tab.dataset ? activateTabSync.call({ tab: tab }) : activateTab.call({ tab: tab })
-  }
-})()
-</script>
 </body>
 </html>
